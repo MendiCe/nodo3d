@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NODO 3D — Mantenimiento Eléctrico · Próximamente</title>
+<meta name="description" content="Sección de Mantenimiento Eléctrico en construcción. Próximamente disponible.">
+<meta property="og:title" content="NODO 3D — Próximamente">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='5' fill='%2323262F'/%3E%3Cpath d='M4 16a8 8 0 0 1 16 0M12 16 16 10' stroke='%23B6FF2E' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='16' r='1.6' fill='%23B6FF2E'/%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg-0:#0c0e11;
+    --bg-1:#14161b;
+    --bg-2:#1a1d23;
+    --panel:#17191f;
+    --line:#2a2e37;
+    --teal-deep:#5c7a17;
+    --teal:#83b022;
+    --cyan:#B6FF2E;
+    --cyan-dim:#9fe62a;
+    --text:#eef3e6;
+    --text-mute:#9aa596;
+    --text-faint:#565f52;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ background:var(--bg-0); color:var(--text); font-family:'Inter', sans-serif; line-height:1.5; overflow-x:hidden; min-height:100vh; display:flex; flex-direction:column; }
+  ::selection{ background:var(--cyan); color:#0b1002; }
+  a{ color:inherit; text-decoration:none; }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:.02em; }
+
+  .grid-bg{
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:.18;
+    pointer-events:none;
+    z-index:-3;
+    mask-image:radial-gradient(ellipse 90% 85% at 50% 30%, black 55%, transparent 100%);
+  }
+  .grid-glow{
+    position:fixed; inset:0; z-index:-3; pointer-events:none;
+    background-image:
+      linear-gradient(var(--cyan) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cyan) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:.55;
+    -webkit-mask-image:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), black 0%, transparent 75%);
+    mask-image:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), black 0%, transparent 75%);
+  }
+  .cursor-glow{
+    position:fixed; inset:0; z-index:-3; pointer-events:none;
+    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(182,255,46,.10), transparent 70%);
+  }
+  @media(hover:none){ .grid-glow, .cursor-glow{ display:none; } }
+  .noise{
+    position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:radial-gradient(ellipse 60% 40% at 20% -10%, rgba(131,176,34,.12), transparent 60%),
+               radial-gradient(ellipse 50% 40% at 100% 10%, rgba(182,255,46,.06), transparent 60%);
+  }
+
+  header{
+    position:relative; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6vw;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:38px; height:38px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(155deg, #1c2410, #0c0e11 70%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep);
+    animation:markGlowIdle 3.6s ease-in-out infinite;
+  }
+  .brand:hover .brand-mark{ animation-duration:1.5s; }
+  .brand-mark svg{ width:22px; height:22px; }
+  .mark-needle{ transform-origin:12px 16px; transition:transform .4s cubic-bezier(.2,.8,.2,1); }
+  .mark-pivot{ transform-origin:12px 16px; animation:pivotPulse 2.4s ease-in-out infinite; }
+  @keyframes pivotPulse{ 0%,100%{ opacity:.6; } 50%{ opacity:1; } }
+  @keyframes needleSweep{ 0%,100%{ transform:rotate(-20deg); } 50%{ transform:rotate(20deg); } }
+  .brand:hover .mark-needle{ transform:rotate(20deg); }
+  @media (hover:none){ .mark-needle{ animation:needleSweep 2s ease-in-out infinite; } }
+  @media (prefers-reduced-motion: reduce){ .brand-mark, .mark-needle, .mark-pivot{ animation:none !important; } }
+  @keyframes markGlowIdle{
+    0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep); }
+    50%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--cyan), 0 0 18px rgba(182,255,46,.4); }
+  }
+  .brand-name{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:16px; }
+  .brand-name span{ color:var(--cyan); font-weight:400; }
+
+  nav{ display:flex; gap:8px; align-items:center; }
+  .nav-links{ display:flex; gap:6px; }
+  .nav-link{
+    position:relative; display:flex; align-items:center; justify-content:center;
+    width:92px; height:34px; border-radius:4px;
+    transition:background .25s, color .25s;
+  }
+  .nav-link:hover{ background:color-mix(in srgb, var(--dest, var(--cyan)) 8%, transparent); color:var(--dest, var(--cyan)); }
+  .nav-link.is-active{ color:var(--cyan); }
+  .nav-link.is-active .nav-icon svg{ stroke:var(--cyan); }
+  .nav-link .nav-icon, .nav-link .nav-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:5px;
+    transition:opacity .3s cubic-bezier(.2,.8,.2,1), transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .nav-link .nav-icon{ opacity:1; transform:scale(1); }
+  .nav-link .nav-icon svg{ width:19px; height:19px; stroke:var(--teal-deep); animation:navBeam 2.6s ease-in-out infinite; }
+  .nav-link:nth-child(2) .nav-icon svg{ animation-delay:-.6s; }
+  .nav-link:nth-child(3) .nav-icon svg{ animation-delay:-1.2s; }
+  @keyframes navBeam{ 0%,100%{ filter:drop-shadow(0 0 0 rgba(182,255,46,0)); opacity:.75; } 50%{ filter:drop-shadow(0 0 5px rgba(182,255,46,.85)); opacity:1; } }
+  .nav-link .nav-label{ opacity:0; transform:translateY(5px); }
+  .nav-link:hover .nav-icon{ opacity:0; transform:scale(.75); }
+  .nav-link:hover .nav-icon svg{ stroke:var(--dest, var(--cyan)); animation:none; filter:drop-shadow(0 0 8px color-mix(in srgb, var(--dest, var(--cyan)) 70%, transparent)); }
+  .nav-link:hover .nav-label{ opacity:1; transform:translateY(0); }
+  @media(max-width:860px){ .nav-links{ display:none; } }
+
+  main{ flex:1; display:flex; align-items:center; justify-content:center; padding:60px 6vw; position:relative; z-index:1; }
+  .soon-wrap{ text-align:center; max-width:520px; }
+
+  .stripe-bar{
+    height:8px; width:180px; margin:0 auto 40px;
+    background:repeating-linear-gradient(-45deg, var(--cyan) 0 10px, var(--bg-1) 10px 20px);
+    background-size:200% 100%;
+    animation:stripeMarch 1.4s linear infinite;
+    border-radius:2px;
+    opacity:.85;
+  }
+  @keyframes stripeMarch{ to{ background-position:28px 0; } }
+
+  .rig{ width:220px; height:220px; margin:0 auto 36px; }
+  .rig .cabinet{ fill:none; stroke:var(--line); stroke-width:2; stroke-dasharray:6 5; animation:dashDraw 6s linear infinite; }
+  @keyframes dashDraw{ to{ stroke-dashoffset:-220; } }
+  .rig .rung{ stroke:var(--line); stroke-width:1.4; }
+  .rig .crane-mast{ stroke:var(--text-faint); stroke-width:2; }
+  .rig .crane-arm{ stroke:var(--text-faint); stroke-width:2; }
+  .rig .cable{ stroke:var(--cyan-dim); stroke-width:1.3; stroke-dasharray:3 3; }
+  .rig .block{ fill:var(--panel); stroke:var(--cyan); stroke-width:1.8; animation:blockBob 2.6s ease-in-out infinite; transform-origin:center; }
+  @keyframes blockBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(14px); } }
+  .rig .gear{ transform-origin:center; animation:gearSpin 5s linear infinite; }
+  .rig .gear circle, .rig .gear rect{ fill:none; stroke:var(--teal-deep); stroke-width:1.6; }
+  @keyframes gearSpin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){
+    .rig .cabinet, .rig .block, .rig .gear, .stripe-bar{ animation:none !important; }
+  }
+
+  .soon-tag{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--cyan-dim); margin-bottom:16px; }
+  .soon-wrap h1{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:clamp(28px,4.5vw,44px); color:#f6fdf0; margin-bottom:16px; }
+  .soon-wrap p{ color:var(--text-mute); font-size:15.5px; max-width:44ch; margin:0 auto 36px; }
+
+  .btn-primary{
+    padding:14px 26px; background:var(--cyan); color:#0b1002; font-weight:600; font-size:14px; border-radius:3px;
+    display:inline-flex; align-items:center; gap:10px; transition:transform .18s, box-shadow .18s;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(182,255,46,.22); }
+
+  footer{ padding:28px 6vw; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-faint); border-top:1px solid var(--line); }
+
+  /* ===== Transicion entre paginas ===== */
+  @view-transition{ navigation:auto; }
+  ::view-transition-old(root){ animation:380ms cubic-bezier(.4,0,.2,1) both nd-page-exit; }
+  ::view-transition-new(root){ animation:600ms cubic-bezier(.16,1,.3,1) both nd-page-enter; }
+  @keyframes nd-page-exit{ from{ opacity:1; filter:blur(0); transform:scale(1); } to{ opacity:0; filter:blur(6px); transform:scale(.98); } }
+  @keyframes nd-page-enter{
+    from{ clip-path:circle(0% at 50% 50%); filter:brightness(1.7) saturate(1.4); }
+    60%{ filter:brightness(1.2); }
+    to{ clip-path:circle(150% at 50% 50%); filter:brightness(1) saturate(1); }
+  }
+  @media (prefers-reduced-motion: reduce){ ::view-transition-old(root), ::view-transition-new(root){ animation:none; } }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="grid-glow"></div>
+<div class="cursor-glow"></div>
+<div class="noise"></div>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path class="mark-arc" d="M4 16a8 8 0 0 1 16 0" stroke="#B6FF2E" stroke-width="1.8" stroke-linecap="round"/>
+        <line class="mark-needle" x1="12" y1="16" x2="12" y2="8" stroke="#B6FF2E" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="mark-pivot" cx="12" cy="16" r="1.6" fill="#B6FF2E"/>
+      </svg>
+    </div>
+    <div class="brand-name">NODO<span>·</span>3D</div>
+  </div>
+  <nav>
+    <div class="nav-links">
+      <a href="./" class="nav-link" style="--dest:#3fe8d4;">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <rect x="6" y="6" width="12" height="12" rx="1"/>
+            <line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/>
+            <line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-label">Diseño</span>
+      </a>
+      <a href="mantenimiento-proximamente.html" class="nav-link is-active" style="--dest:var(--cyan);">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <path d="M4 16a8 8 0 0 1 16 0"/>
+            <line x1="12" y1="16" x2="16" y2="10"/>
+            <circle cx="12" cy="16" r="1.4"/>
+            <line x1="2" y1="16" x2="4" y2="16"/><line x1="20" y1="16" x2="22" y2="16"/>
+          </svg>
+        </span>
+        <span class="nav-label">Mantenim.</span>
+      </a>
+      <a href="montajes-proximamente.html" class="nav-link" style="--dest:#D97706;">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <path d="M4 20 4 13 11 13 11 7 17 7 17 4.5"/>
+            <rect x="14" y="1" width="6" height="6" rx="1"/>
+          </svg>
+        </span>
+        <span class="nav-label">Montajes</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="soon-wrap">
+    <div class="stripe-bar"></div>
+
+    <svg class="rig" viewBox="0 0 220 220" aria-hidden="true">
+      <rect class="cabinet" x="60" y="60" width="100" height="140" rx="6"/>
+      <line class="rung" x1="75" y1="90" x2="145" y2="90"/>
+      <line class="rung" x1="75" y1="115" x2="145" y2="115"/>
+      <line class="rung" x1="75" y1="140" x2="145" y2="140"/>
+
+      <line class="crane-mast" x1="170" y1="200" x2="170" y2="20"/>
+      <line class="crane-arm" x1="170" y1="20" x2="100" y2="20"/>
+      <line class="cable" x1="100" y1="20" x2="100" y2="58"/>
+      <rect class="block" x="88" y="58" width="24" height="18" rx="2"/>
+
+      <g class="gear" transform="translate(38,40)">
+        <circle cx="0" cy="0" r="12"/>
+        <circle cx="0" cy="0" r="4"/>
+        <rect x="-1.2" y="-17" width="2.4" height="6"/>
+        <rect x="-1.2" y="11" width="2.4" height="6"/>
+        <rect x="-17" y="-1.2" width="6" height="2.4"/>
+        <rect x="11" y="-1.2" width="6" height="2.4"/>
+      </g>
+    </svg>
+
+    <div class="soon-tag">// Próximamente</div>
+    <h1>Estamos construyendo esta sección</h1>
+    <p>El área de mantenimiento eléctrico está en desarrollo. Mientras tanto, conoce nuestro servicio de diseño eléctrico, ya disponible.</p>
+    <a href="./" class="btn-primary">
+      Ver Diseño Eléctrico
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</main>
+
+<footer>NODO·3D — Ingeniería eléctrica</footer>
+
+<script>
+  const root = document.documentElement;
+  let mouseTicking = false;
+  window.addEventListener('mousemove', (e)=>{
+    if(!mouseTicking){
+      requestAnimationFrame(()=>{
+        root.style.setProperty('--mx', e.clientX + 'px');
+        root.style.setProperty('--my', e.clientY + 'px');
+        mouseTicking = false;
+      });
+      mouseTicking = true;
+    }
+  }, {passive:true});
+</script>
+
+</body>
+</html>

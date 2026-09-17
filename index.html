@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NODO 3D — Diseño Eléctrico &amp; Modelado 3D · Eplan · Inventor · Revit Electrical · AutoCAD</title>
+<meta name="description" content="Diseño eléctrico y modelado 3D en Eplan, Inventor y Revit Electrical, además de esquemáticos y diagramas unifilares en AutoCAD. Cotiza tu proyecto en minutos.">
+<meta property="og:title" content="NODO 3D — Diseño Eléctrico &amp; Modelado 3D">
+<meta property="og:description" content="Modelado 3D y planos eléctricos listos para construir: Eplan, Inventor, Revit Electrical y AutoCAD.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='5' fill='%23071a1e'/%3E%3Cpolygon points='12,6 6.8,9 6.8,15 12,18 17.2,15 17.2,9' fill='none' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='12' y2='6' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='6.8' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='17.2' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%233fe8d4'/%3E%3Ccircle cx='6.8' cy='9' r='1.15' fill='%23071a1e' stroke='%23B6FF2E' stroke-width='1.1'/%3E%3Ccircle cx='17.2' cy='9' r='1.15' fill='%23071a1e' stroke='%23D97706' stroke-width='1.1'/%3E%3Ccircle cx='12' cy='18' r='1.15' fill='%23071a1e' stroke='%233fe8d4' stroke-width='1.1'/%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg-0:#050f12;
+    --bg-1:#0a1e22;
+    --bg-2:#0e2a2f;
+    --panel:#0d2529;
+    --line:#1c3d40;
+    --teal-deep:#0e6b73;
+    --teal:#1f9aa3;
+    --cyan:#3fe8d4;
+    --cyan-dim:#2bb5a6;
+    --text:#e6f3f1;
+    --text-mute:#8aa8a6;
+    --text-faint:#4d6b69;
+    --amber:#d9a441;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg-0);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+
+  ::selection{background:var(--cyan); color:#04121a;}
+
+  /* Blueprint grid background */
+  .grid-bg{
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px),
+      linear-gradient(var(--teal-deep) 1px, transparent 1px),
+      linear-gradient(90deg, var(--teal-deep) 1px, transparent 1px);
+    background-size:64px 64px, 64px 64px, 320px 320px, 320px 320px;
+    opacity:.18;
+    pointer-events:none;
+    z-index:-3;
+    mask-image:radial-gradient(ellipse 90% 85% at 50% 30%, black 55%, transparent 100%);
+  }
+
+  /* Grilla resaltada que sigue al cursor, tipo linterna sobre el plano */
+  .grid-glow{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    pointer-events:none;
+    background-image:
+      linear-gradient(var(--cyan) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cyan) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:.55;
+    -webkit-mask-image:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), black 0%, transparent 75%);
+    mask-image:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), black 0%, transparent 75%);
+    transition:opacity .3s ease;
+  }
+
+  /* Resplandor ambiental suave que acompaña el cursor por toda la página */
+  .cursor-glow{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    pointer-events:none;
+    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(63,232,212,.10), transparent 70%);
+  }
+
+  @media(hover:none){ .grid-glow, .cursor-glow{ display:none; } }
+
+  .noise{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    pointer-events:none;
+    background:radial-gradient(ellipse 60% 40% at 20% -10%, rgba(31,154,163,.14), transparent 60%),
+               radial-gradient(ellipse 50% 40% at 100% 10%, rgba(63,232,212,.08), transparent 60%);
+  }
+
+  /* Símbolos de control/potencia flotando en el fondo, tipo boceto — por encima de la grilla */
+  .symbol-field{
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .symbol-field svg{
+    position:absolute;
+    stroke:var(--teal-deep);
+    fill:none;
+    stroke-width:1.1;
+    opacity:.2;
+  }
+  .symbol-field svg.accent{ stroke:var(--teal); opacity:.22; }
+  .symbol-field svg text{
+    fill:var(--teal-deep);
+    stroke:none;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .symbol-field svg.drift{ animation:symbolDrift 14s ease-in-out infinite; }
+  @media(max-width:640px){ .symbol-field{ display:none; } }
+  @keyframes symbolDrift{
+    0%,100%{ transform:translateY(0); opacity:.16; }
+    50%{ transform:translateY(-8px); opacity:.26; }
+  }
+  @media (prefers-reduced-motion: reduce){ .symbol-field svg.drift{ animation:none; } }
+
+  /* Panel eléctrico tipo wireframe, boceto de fondo del hero — por encima de la grilla */
+  .panel-sketch{
+    position:absolute;
+    right:-4vw;
+    top:150px;
+    width:min(46vw, 560px);
+    opacity:.5;
+    z-index:-1;
+    pointer-events:none;
+  }
+  .panel-sketch svg{ width:100%; height:auto; }
+  .panel-sketch .box{ stroke:var(--teal-deep); fill:none; stroke-width:1; }
+  .panel-sketch .comp{ stroke:var(--teal); fill:none; stroke-width:1; opacity:.75; }
+  .panel-sketch .lbl{ font-family:'IBM Plex Mono', monospace; font-size:8px; fill:var(--text-faint); stroke:none; letter-spacing:.05em; }
+  @media(max-width:960px){ .panel-sketch{ display:none; } }
+
+  a{color:inherit; text-decoration:none;}
+
+  .mono{font-family:'IBM Plex Mono', monospace; letter-spacing:.02em;}
+
+  /* ===== Header ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6vw;
+    background:rgba(5,15,18,.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:38px; height:38px;
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(155deg, #123338, #071a1e 70%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.05),
+      inset 0 -8px 14px rgba(0,0,0,.4),
+      0 0 0 1px var(--teal-deep);
+    animation:markGlowIdle 3.6s ease-in-out infinite;
+  }
+  .brand:hover .brand-mark{ animation-duration:1.5s; }
+
+  .brand-mark svg{ width:22px; height:22px; position:relative; z-index:1; }
+
+  .mark-cube{ transition:opacity .3s ease, filter .3s ease; opacity:.75; }
+  .mark-spoke{ transition:opacity .3s ease; opacity:.6; }
+  .mark-satellites{ transform-origin:12px 12px; }
+  .mark-node-spin{ transform-origin:0 0; }
+  .mark-core{
+    transform-origin:12px 12px;
+    animation:markPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes markPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+
+  .brand:hover .mark-cube{ opacity:1; filter:drop-shadow(0 0 2px #3fe8d4); }
+  .brand:hover .mark-spoke{ opacity:1; }
+  .brand:hover .mark-satellites{ animation:satOrbit 2.4s linear infinite; }
+  .brand:hover .mark-node-spin{ animation:nodeSpin 1.2s linear infinite; }
+  @keyframes satOrbit{ to{ transform:rotate(360deg); } }
+  @keyframes nodeSpin{ to{ transform:rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark-core{ animation:none; opacity:1; }
+  }
+
+  /* En dispositivos táctiles no existe hover real y no es fiable simularlo con toques:
+     el logo completo respira solo, en bucle, sin depender de ningún toque */
+  @media (hover:none){
+    .mark-satellites{ animation:satOrbit 3.6s linear infinite; }
+    .mark-node-spin{ animation:nodeSpin 1.8s linear infinite; }
+    .mark-cube, .mark-spoke{ opacity:1; }
+  }
+  @keyframes markGlowIdle{
+    0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep); }
+    50%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--cyan), 0 0 18px rgba(63,232,212,.4); }
+  }
+  @media (hover:none) and (prefers-reduced-motion: reduce){
+    .brand-mark, .mark-satellites, .mark-node-spin, .mark-core{ animation:none !important; opacity:1; }
+  }
+
+  .brand-text{ display:flex; flex-direction:column; gap:2px; }
+  .brand-name{font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:16px; letter-spacing:.01em; line-height:1;}
+  .brand-name span{color:var(--cyan); font-weight:400;}
+  .brand-sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px;
+    font-weight:500;
+    letter-spacing:.16em;
+    color:var(--text-faint);
+    line-height:1;
+  }
+
+  nav{display:flex; gap:8px; align-items:center;}
+  nav a{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-mute);
+    transition:color .2s;
+    position:relative;
+  }
+  .nav-links{display:flex; gap:6px;}
+  .nav-link{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:92px;
+    height:34px;
+    border-radius:4px;
+    transition:background .25s, color .25s;
+  }
+  .nav-link:hover{ background:color-mix(in srgb, var(--dest, var(--cyan)) 8%, transparent); color:var(--dest, var(--cyan)); }
+  .nav-link.is-active{ color:var(--cyan); }
+  .nav-link.is-active .nav-icon svg{ stroke:var(--cyan); }
+  .nav-link .nav-icon,
+  .nav-link .nav-label{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    transition:opacity .3s cubic-bezier(.2,.8,.2,1), transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .nav-link .nav-icon{
+    opacity:1;
+    transform:scale(1);
+  }
+  .nav-link .nav-icon svg{
+    width:19px; height:19px;
+    stroke:var(--teal-dim, var(--teal-deep));
+    animation:navBeam 2.6s ease-in-out infinite;
+  }
+  .nav-link:nth-child(2) .nav-icon svg{ animation-delay:-.6s; }
+  .nav-link:nth-child(3) .nav-icon svg{ animation-delay:-1.2s; }
+  @keyframes navBeam{
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(63,232,212,0)); opacity:.75; }
+    50%{ filter:drop-shadow(0 0 5px rgba(63,232,212,.85)); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){ .nav-link .nav-icon svg{ animation:none; } }
+  .nav-link .nav-icon .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:8px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+  }
+  .nav-link .nav-label{
+    opacity:0;
+    transform:translateY(5px);
+  }
+  .nav-link:hover .nav-icon{ opacity:0; transform:scale(.75); }
+  .nav-link:hover .nav-icon svg{ stroke:var(--dest, var(--cyan)); animation:none; filter:drop-shadow(0 0 8px color-mix(in srgb, var(--dest, var(--cyan)) 70%, transparent)); }
+  .nav-link:hover .nav-label{ opacity:1; transform:translateY(0); }
+
+  .cta-top{
+    padding:9px 18px;
+    border:1px solid var(--cyan-dim);
+    border-radius:3px;
+    color:var(--cyan) !important;
+    font-size:12px !important;
+    margin-left:10px;
+  }
+  .cta-top:hover{background:rgba(63,232,212,.08);}
+
+  .nav-links-mobile{ display:none; gap:8px; align-items:center; }
+  .nav-link-m{
+    width:38px; height:38px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line);
+    background:var(--bg-1);
+    transition:border-color .2s, background .2s, transform .15s;
+  }
+  .nav-link-m svg{ width:18px; height:18px; opacity:.75; }
+  .nav-link-m.is-active{ border-color:var(--cyan); background:rgba(63,232,212,.08); }
+  .nav-link-m.is-active svg{ opacity:1; }
+  .nav-link-m:active{ transform:scale(.92); }
+
+  @media(max-width:860px){
+    .nav-links{ display:none; }
+    .nav-links-mobile{ display:flex; }
+    .cta-top{ display:none; } /* el mismo llamado ya está en el botón principal del hero */
+  }
+  @media(min-width:861px){ .nav-links-mobile{ display:none !important; } }
+
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;
+    isolation:isolate;
+    z-index:1;
+    padding:110px 6vw 90px;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--cyan-dim);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:26px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:22px; height:1px;
+    background:var(--cyan-dim);
+  }
+
+  .hero h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:clamp(34px, 5.4vw, 72px);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    max-width:15ch;
+    color:#f2fbfa;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--cyan);
+    position:relative;
+  }
+
+  .hero-sub{
+    margin-top:26px;
+    max-width:52ch;
+    font-size:17px;
+    color:var(--text-mute);
+  }
+
+  .hero-actions{
+    margin-top:40px;
+    display:flex; gap:16px; flex-wrap:wrap;
+  }
+  .btn-primary{
+    padding:14px 26px;
+    background:var(--cyan);
+    color:#04141a;
+    font-weight:600;
+    font-size:14px;
+    border-radius:3px;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:transform .18s, box-shadow .18s;
+    box-shadow:0 0 0 rgba(63,232,212,0);
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 24px rgba(63,232,212,.18);}
+  .btn-secondary{
+    padding:14px 26px;
+    border:1px solid var(--line);
+    color:var(--text-mute);
+    font-size:14px;
+    border-radius:3px;
+    transition:border-color .2s, color .2s;
+  }
+  .btn-secondary:hover{border-color:var(--cyan-dim); color:var(--cyan);}
+
+  /* Schematic strip under hero */
+  .schematic-strip{
+    margin:64px auto 0;
+    position:relative;
+    height:64px;
+    max-width:640px;
+    opacity:.8;
+  }
+  .schematic-strip svg{width:100%; height:100%; overflow:visible;}
+  .wire{
+    fill:none;
+    stroke:var(--teal);
+    stroke-width:1.1;
+    stroke-dasharray:4 4000;
+    stroke-dashoffset:0;
+    animation:drawline 3.2s ease-out forwards;
+    opacity:.55;
+  }
+  .wire.alt{ stroke:var(--cyan-dim); animation-delay:.4s; }
+  @keyframes drawline{
+    from{stroke-dashoffset:4000;}
+    to{stroke-dashoffset:0;}
+  }
+  .node{ fill:var(--bg-0); stroke:var(--cyan); stroke-width:1.1; }
+  .node-pulse{
+    fill:var(--cyan);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.3; r:2.4;}
+    50%{opacity:.8; r:3.1;}
+  }
+  .tag-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px;
+    fill:var(--text-faint);
+    letter-spacing:.05em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .wire{animation:none; stroke-dashoffset:0;}
+    .node-pulse{animation:none;}
+  }
+
+  /* ===== Bus unifilar que conecta las secciones ===== */
+  #bus-svg{
+    position:absolute;
+    left:0; top:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
+  }
+  #bus-svg .bus-line{
+    fill:none;
+    stroke:var(--teal-deep);
+    stroke-width:1.4;
+    stroke-dasharray:6 6000;
+    stroke-dashoffset:0;
+    opacity:.55;
+    transition:opacity .4s;
+  }
+  #bus-svg .bus-node{
+    fill:var(--bg-0);
+    stroke:var(--cyan-dim);
+    stroke-width:1.4;
+  }
+  #bus-svg .bus-node.on{
+    stroke:var(--cyan);
+  }
+  #bus-svg .bus-node-core{
+    fill:var(--teal-deep);
+  }
+  #bus-svg .bus-node.on .bus-node-core{
+    fill:var(--cyan);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @media(max-width:860px){ #bus-svg{ display:none; } }
+
+  .page-frame{
+    position:relative;
+  }
+
+  /* ===== Section shell ===== */
+  section{
+    position:relative; z-index:1;
+    padding:100px 6vw;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:40px;
+    margin-bottom:56px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:28px;
+  }
+  .section-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--cyan-dim);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .section-head h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:clamp(26px,3vw,38px);
+    color:#f2fbfa;
+    max-width:20ch;
+  }
+  .section-head p{
+    color:var(--text-mute);
+    max-width:34ch;
+    font-size:14.5px;
+  }
+
+  /* ===== Diagrama de átomo: 6 servicios como electrones orbitando ===== */
+  .atom-wrap{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:56px;
+    align-items:start;
+  }
+  @media(max-width:900px){
+    .atom-wrap{ grid-template-columns:1fr; gap:36px; justify-items:center; }
+  }
+
+  .atom-diagram{
+    position:relative;
+    width:320px;
+    height:320px;
+    flex-shrink:0;
+  }
+  @media(max-width:420px){ .atom-diagram{ width:260px; height:260px; } }
+
+  .atom-nucleus{
+    position:absolute;
+    top:50%; left:50%;
+    width:18px; height:18px;
+    margin:-9px 0 0 -9px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #eafffb, var(--cyan) 40%, var(--teal-deep) 100%);
+    box-shadow:0 0 16px rgba(63,232,212,.55);
+    z-index:2;
+  }
+  .atom-nucleus::after{
+    content:'';
+    position:absolute;
+    inset:-6px;
+    border-radius:50%;
+    border:1px solid rgba(63,232,212,.3);
+    animation:nucleusPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes nucleusPulse{
+    0%,100%{ transform:scale(1); opacity:.7; }
+    50%{ transform:scale(1.5); opacity:0; }
+  }
+
+  /* Anillos decorativos, puramente visuales (no rotan) */
+  .atom-guide{
+    position:absolute;
+    top:50%; left:50%;
+    border:1px dashed rgba(63,232,212,.16);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .guide-a{ width:300px; height:300px; margin:-150px 0 0 -150px; }
+  .guide-b{ width:220px; height:220px; margin:-110px 0 0 -110px; }
+  .guide-c{ width:140px; height:140px; margin:-70px 0 0 -70px; }
+  @media(max-width:420px){
+    .guide-a{ width:244px; height:244px; margin:-122px 0 0 -122px; }
+    .guide-b{ width:178px; height:178px; margin:-89px 0 0 -89px; }
+    .guide-c{ width:112px; height:112px; margin:-56px 0 0 -56px; }
+  }
+
+  /* Cada electrón gira de forma independiente: pausar uno no afecta a los demás */
+  .atom-node{
+    position:absolute;
+    top:50%; left:50%;
+    width:0; height:0;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+  }
+  .atom-node[data-ring="a"]{ --radius:150px; animation-name:orbitCW; animation-duration:42s; }
+  .atom-node[data-ring="b"]{ --radius:110px; animation-name:orbitCCW; animation-duration:32s; }
+  .atom-node[data-ring="c"]{ --radius:70px; animation-name:orbitCW; animation-duration:24s; }
+  @media(max-width:420px){
+    .atom-node[data-ring="a"]{ --radius:122px; }
+    .atom-node[data-ring="b"]{ --radius:89px; }
+    .atom-node[data-ring="c"]{ --radius:56px; }
+  }
+  @keyframes orbitCW{
+    from{ transform:rotate(var(--pos)) translateX(var(--radius)); }
+    to{ transform:rotate(calc(var(--pos) + 360deg)) translateX(var(--radius)); }
+  }
+  @keyframes orbitCCW{
+    from{ transform:rotate(var(--pos)) translateX(var(--radius)); }
+    to{ transform:rotate(calc(var(--pos) - 360deg)) translateX(var(--radius)); }
+  }
+  .atom-node.stopped{ animation-play-state:paused; }
+
+  .node-inner{
+    width:48px; height:48px;
+    margin:-24px 0 0 -24px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--panel);
+    border:1.5px solid var(--teal-deep);
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.35);
+    transition:border-color .25s, box-shadow .25s, background .25s, opacity .3s, transform .25s;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+  }
+  /* Contra-rotación para que el número se mantenga siempre de pie */
+  @keyframes counterCW{
+    from{ transform:rotate(calc(var(--pos) * -1)); }
+    to{ transform:rotate(calc(var(--pos) * -1 - 360deg)); }
+  }
+  @keyframes counterCCW{
+    from{ transform:rotate(calc(var(--pos) * -1)); }
+    to{ transform:rotate(calc(var(--pos) * -1 + 360deg)); }
+  }
+  /* Brillo respirante que invita a interactuar */
+  @keyframes nodeBeacon{
+    0%,100%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 rgba(63,232,212,0); }
+    50%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 12px rgba(63,232,212,.5); }
+  }
+  .atom-node[data-ring="a"] .node-inner{ animation-name:counterCW, nodeBeacon; animation-duration:42s, 3.2s; }
+  .atom-node[data-ring="b"] .node-inner{ animation-name:counterCCW, nodeBeacon; animation-duration:32s, 3.2s; animation-delay:0s, -1.1s; }
+  .atom-node[data-ring="c"] .node-inner{ animation-name:counterCW, nodeBeacon; animation-duration:24s, 3.2s; animation-delay:0s, -2.2s; }
+  .atom-node.stopped .node-inner{ animation-play-state:paused; }
+
+  .node-inner .node-num{
+    font-size:11.5px;
+    color:var(--text);
+    letter-spacing:.05em;
+    transition:color .3s;
+  }
+  .node-inner:hover{ border-color:var(--cyan); transform:scale(1.08); }
+  .atom-node.active .node-inner{
+    border-color:var(--cyan);
+    background:rgba(63,232,212,.12);
+    box-shadow:0 0 18px rgba(63,232,212,.55);
+    transform:scale(1.1);
+  }
+  .atom-node.active .node-inner .node-num{ color:var(--cyan); }
+  .atom-diagram.has-active .atom-node:not(.active) .node-inner{ opacity:.32; }
+
+  @media(hover:hover){
+    .node-inner:hover .node-num{ color:var(--cyan-dim); }
+  }
+
+  .atom-detail{ position:relative; min-height:260px; }
+  .atom-hint{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-faint);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .atom-hint::before{
+    content:'';
+    width:7px; height:7px;
+    border-radius:50%;
+    border:1.5px solid var(--teal-deep);
+  }
+  .atom-detail.has-active .atom-hint{ display:none; }
+
+  .atom-panel{
+    position:relative;
+    display:none;
+    background:var(--panel);
+    border:1px solid var(--teal-deep);
+    border-radius:8px;
+    padding:32px 30px;
+    overflow:hidden;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .atom-panel.active{ display:block; }
+  .atom-panel.show{ opacity:1; transform:none; }
+
+  .atom-panel .bg-schema{
+    position:absolute;
+    inset:0;
+    opacity:.32;
+    stroke:var(--cyan-dim);
+    fill:none;
+    stroke-width:1.1;
+    pointer-events:none;
+    -webkit-mask-image:linear-gradient(115deg, transparent 8%, black 46%);
+    mask-image:linear-gradient(115deg, transparent 8%, black 46%);
+  }
+  .atom-panel .idx{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.1em;
+  }
+  .atom-panel .service-icon{
+    width:38px; height:38px;
+    color:var(--cyan);
+    margin:12px 0 14px;
+  }
+  .atom-panel h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:19px;
+    font-weight:600;
+    color:#f2fbfa;
+    margin-bottom:10px;
+  }
+  .atom-panel p{
+    font-size:14px;
+    color:var(--text-mute);
+    line-height:1.65;
+    max-width:52ch;
+  }
+  .atom-panel .platform{
+    display:inline-block;
+    margin-top:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.06em;
+    color:var(--teal);
+    border:1px solid var(--teal-deep);
+    padding:4px 9px;
+    border-radius:2px;
+  }
+  .atom-close{
+    position:absolute;
+    top:16px; right:16px;
+    width:26px; height:26px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    color:var(--text-faint);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    font-size:14px;
+    line-height:1;
+    opacity:0;
+    pointer-events:none;
+    z-index:2;
+    transition:border-color .2s, color .2s, opacity .25s ease;
+  }
+  .atom-panel.pinned .atom-close{ opacity:1; pointer-events:auto; }
+  .atom-close:hover{ border-color:var(--cyan-dim); color:var(--cyan-dim); }
+
+  /* Pequeña pista de que el panel quedó fijado */
+  .atom-panel.pinned{ border-color:var(--cyan); }
+
+  /* ===== Process / unifilar timeline ===== */
+  .process{
+    position:relative;
+    padding-left:26px;
+  }
+  .process-rail{
+    position:absolute;
+    left:0; top:6px; bottom:6px;
+    width:1px;
+    background:linear-gradient(var(--line), var(--teal-deep), var(--line));
+  }
+  .process-step{
+    position:relative;
+    padding:0 0 48px 30px;
+  }
+  .process-step:last-child{padding-bottom:0;}
+  .process-step::before{
+    content:'';
+    position:absolute;
+    left:-31px; top:4px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:var(--bg-0);
+    border:1.5px solid var(--cyan);
+  }
+  .process-step .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--cyan-dim);
+    letter-spacing:.1em;
+  }
+  .process-step h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:19px;
+    font-weight:600;
+    margin:8px 0 8px;
+    color:#f2fbfa;
+  }
+  .process-step p{
+    color:var(--text-mute);
+    font-size:14px;
+    max-width:56ch;
+  }
+
+  /* ===== Software: tarjetas tipo chip electrónico ===== */
+  .chip-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:28px 22px;
+    margin-top:12px;
+  }
+  @media(max-width:920px){ .chip-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:480px){ .chip-grid{ grid-template-columns:1fr; } }
+
+  .chip-card{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:26px 18px 20px;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s;
+  }
+  .chip-card::before,
+  .chip-card::after{
+    content:'';
+    position:absolute;
+    left:14px; right:14px;
+    height:5px;
+    background-image:repeating-linear-gradient(90deg, var(--teal-deep) 0 5px, transparent 5px 15px);
+    transition:background-image .3s ease;
+  }
+  .chip-card::before{ top:-5px; }
+  .chip-card::after{ bottom:-5px; }
+  .chip-card:hover{
+    transform:translateY(-5px);
+    border-color:var(--teal-deep);
+    box-shadow:0 18px 40px rgba(0,0,0,.4);
+  }
+  .chip-card:hover::before,
+  .chip-card:hover::after{
+    background-image:repeating-linear-gradient(90deg, var(--cyan) 0 5px, transparent 5px 15px);
+  }
+
+  .chip-badge{
+    width:50px; height:50px;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(155deg, var(--c1, #123338), var(--c2, #0e6b73));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -6px 10px rgba(0,0,0,.3);
+    margin-bottom:16px;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .chip-card:hover .chip-badge{ transform:rotate(-4deg) scale(1.06); }
+  .chip-badge svg{ width:26px; height:26px; }
+
+  .chip-card h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15.5px;
+    color:#f2fbfa;
+    letter-spacing:.01em;
+  }
+  .chip-sub{
+    margin-top:8px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .chip-sub span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--text-mute);
+    border:1px solid var(--line);
+    padding:3px 8px;
+    border-radius:2px;
+    transition:border-color .3s, color .3s;
+  }
+  .chip-card:hover .chip-sub span{
+    border-color:var(--teal-deep);
+    color:var(--cyan-dim);
+  }
+
+  .chip-led{
+    position:absolute;
+    top:16px; right:16px;
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--teal-deep);
+    transition:background .3s, box-shadow .3s;
+  }
+  .chip-card:hover .chip-led{
+    background:var(--cyan);
+    box-shadow:0 0 8px rgba(63,232,212,.7);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+
+  .trademark-note{
+    margin-top:26px;
+    font-size:11.5px;
+    line-height:1.6;
+    color:var(--text-faint);
+    max-width:72ch;
+    border-top:1px solid var(--line);
+    padding-top:16px;
+  }
+
+  /* ===== Galería de tableros + visor 2D/3D ===== */
+  .boards-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media(max-width:920px){ .boards-grid{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:640px){ .boards-grid{ grid-template-columns:1fr; } }
+
+  .board-card{
+    background:var(--panel); padding:28px 24px; cursor:pointer; position:relative;
+    transition:background .25s, transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+  }
+  .board-card:hover{ background:#0e2224; transform:scale(1.03); box-shadow:0 16px 40px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep); z-index:2; }
+  .board-card .idx{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-faint); letter-spacing:.1em; }
+  .board-card h3{ font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; margin:14px 0 8px; color:#f2fbfa; }
+  .board-card p{ font-size:13px; color:var(--text-mute); line-height:1.55; }
+  .board-card .tagline{ display:inline-block; margin-top:14px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--teal); border:1px solid var(--teal-deep); padding:4px 9px; border-radius:2px; }
+
+  /* Estado vacío: aún no hay tableros publicados */
+  .boards-empty{
+    grid-column:1 / -1; background:var(--panel); padding:56px 32px; text-align:center;
+  }
+  .boards-empty .rig{ width:150px; height:150px; margin:0 auto 24px; }
+  .boards-empty .rig .cabinet{ fill:none; stroke:var(--line); stroke-width:2; stroke-dasharray:6 5; animation:boardsDashDraw 6s linear infinite; }
+  @keyframes boardsDashDraw{ to{ stroke-dashoffset:-220; } }
+  .boards-empty .rig .rung{ stroke:var(--line); stroke-width:1.4; }
+  .boards-empty .rig .crane-mast, .boards-empty .rig .crane-arm{ stroke:var(--text-faint); stroke-width:2; }
+  .boards-empty .rig .cable{ stroke:var(--cyan-dim); stroke-width:1.3; stroke-dasharray:3 3; }
+  .boards-empty .rig .block{ fill:var(--panel); stroke:var(--cyan); stroke-width:1.8; animation:boardsBlockBob 2.6s ease-in-out infinite; transform-origin:center; }
+  @keyframes boardsBlockBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(10px); } }
+  @media (prefers-reduced-motion: reduce){ .boards-empty .rig .cabinet, .boards-empty .rig .block{ animation:none !important; } }
+  .boards-empty h3{ font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:600; color:#f2fbfa; margin-bottom:10px; }
+  .boards-empty p{ color:var(--text-mute); font-size:14px; max-width:48ch; margin:0 auto; }
+
+  /* Modal del visor */
+  .board-modal{
+    position:fixed; inset:0; z-index:200;
+    background:rgba(4,10,11,.86); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    padding:5vh 5vw;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .board-modal.is-open{ opacity:1; pointer-events:auto; }
+  .board-modal-panel{
+    width:min(920px, 100%); max-height:90vh; overflow:auto;
+    background:var(--bg-1); border:1px solid var(--line); border-radius:8px;
+    padding:28px 30px 30px;
+    transform:translateY(14px) scale(.98);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .board-modal.is-open .board-modal-panel{ transform:translateY(0) scale(1); }
+  .board-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:18px; }
+  .board-modal-head h3{ font-family:'Space Grotesk', sans-serif; font-size:20px; font-weight:600; color:#f2fbfa; }
+  .board-modal-head p{ color:var(--text-mute); font-size:13.5px; margin-top:6px; max-width:60ch; }
+  .board-modal-close{
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:transparent;
+    color:var(--text-mute); font-size:16px; line-height:1; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; transition:border-color .2s, color .2s;
+  }
+  .board-modal-close:hover{ border-color:var(--cyan); color:var(--cyan); }
+
+  .view-tabs{ display:inline-flex; border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-bottom:18px; }
+  .view-tab{
+    padding:9px 22px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.08em;
+    color:var(--text-mute); cursor:pointer; transition:background .2s, color .2s; background:transparent; border:none;
+  }
+  .view-tab.is-active{ background:var(--cyan); color:#03181a; }
+  .view-tab:not(.is-active):hover{ background:var(--bg-2); color:var(--text); }
+
+  .view-stage{ position:relative; width:100%; aspect-ratio:16/10; background:var(--bg-0); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .view-pane{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+  .view-pane.is-active{ display:flex; }
+  .view-pane img{ max-width:100%; max-height:100%; object-fit:contain; }
+  .view-pane canvas{ display:block; width:100% !important; height:100% !important; }
+  .view-hint{
+    position:absolute; bottom:10px; right:12px; font-family:'IBM Plex Mono', monospace; font-size:10px;
+    color:var(--text-faint); letter-spacing:.05em; pointer-events:none;
+  }
+  .view-loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-faint); letter-spacing:.08em;
+  }
+
+  /* ===== CTA ===== */
+  .cta-section{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:100px 6vw;
+    background:radial-gradient(ellipse 60% 100% at 50% 50%, rgba(31,154,163,.06), transparent 70%);
+  }
+  .cta-section .section-head{ text-align:center; border-bottom:none; margin-bottom:8px; }
+  .cta-section .section-tag{ justify-content:center; display:flex;}
+  .cta-section h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(26px,3.4vw,38px);
+    max-width:26ch;
+    margin:0 auto 14px;
+    color:#f2fbfa;
+  }
+  .cta-section > .section-head > p{
+    color:var(--text-mute);
+    max-width:52ch;
+    margin:0 auto;
+  }
+
+  /* ===== Encuesta / calculadora tipo diagrama unifilar ===== */
+  .quote-flow{
+    position:relative;
+    max-width:640px;
+    margin:64px auto 0;
+    padding-left:34px;
+  }
+  .quote-rail{
+    position:absolute;
+    left:9px; top:6px; bottom:6px;
+    width:1px;
+    background:linear-gradient(var(--line), var(--teal-deep), var(--line));
+  }
+  .quote-step{
+    position:relative;
+    padding-bottom:34px;
+    transition:opacity .35s ease;
+  }
+  .quote-step.locked{
+    opacity:.35;
+    pointer-events:none;
+  }
+  .quote-step::before{
+    content:'';
+    position:absolute;
+    left:-34px; top:4px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:var(--bg-0);
+    border:1.5px solid var(--teal-deep);
+    transition:border-color .3s, box-shadow .3s;
+    z-index:1;
+  }
+  .quote-step.answered::before{
+    border-color:var(--cyan);
+    box-shadow:0 0 8px rgba(63,232,212,.6);
+  }
+  .quote-step-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--cyan-dim);
+    letter-spacing:.1em;
+  }
+  .quote-step h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:17px;
+    font-weight:600;
+    margin:6px 0 16px;
+    color:#f2fbfa;
+    text-align:left;
+  }
+  .quote-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    max-height:400px;
+    overflow:hidden;
+    transition:opacity .35s ease, max-height .4s ease, margin .35s ease;
+  }
+  .quote-step.answered .quote-options{
+    opacity:0;
+    max-height:0;
+    margin:0;
+    pointer-events:none;
+  }
+  .quote-block{
+    position:relative;
+    padding:11px 16px 11px 24px;
+    background:var(--bg-1);
+    border:1px solid var(--line);
+    border-radius:3px;
+    color:var(--text-mute);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.01em;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .25s, color .25s, background .25s, transform .15s;
+  }
+  .quote-block::before{
+    content:'';
+    position:absolute;
+    left:0; top:50%;
+    width:12px; height:1px;
+    background:var(--line);
+    transform:translateY(-50%);
+    transition:background .25s;
+  }
+  .quote-block:hover{ border-color:var(--teal-deep); color:var(--text); transform:translateY(-1px); }
+  .quote-block:hover::before{ background:var(--teal-deep); }
+  .quote-block.selected{
+    border-color:var(--cyan);
+    color:var(--cyan);
+    background:rgba(63,232,212,.08);
+  }
+  .quote-block.selected::before{ background:var(--cyan); }
+
+  .quote-answer{
+    display:none;
+    align-items:center;
+    gap:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--cyan-dim);
+    opacity:0;
+    transform:translateY(-6px);
+    transition:opacity .35s ease .1s, transform .35s ease .1s;
+  }
+  .quote-step.answered .quote-answer{ display:flex; opacity:1; transform:none; }
+  .quote-answer .change-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--text-faint);
+    border:1px solid var(--line);
+    padding:3px 8px;
+    border-radius:2px;
+    cursor:pointer;
+    transition:border-color .2s, color .2s;
+  }
+  .quote-answer .change-btn:hover{ border-color:var(--teal-deep); color:var(--cyan-dim); }
+
+  .quote-result{
+    position:relative;
+    margin-top:6px;
+    padding:28px 26px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    opacity:0;
+    max-height:0;
+    overflow:hidden;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .45s ease, max-height .5s ease, border-color .3s, visibility 0s linear .45s;
+  }
+  .quote-result.in{
+    opacity:1;
+    max-height:400px;
+    visibility:visible;
+    pointer-events:auto;
+    border-color:var(--teal-deep);
+    transition:opacity .45s ease, max-height .5s ease, border-color .3s;
+  }
+  .quote-result .result-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--cyan-dim);
+    text-transform:uppercase;
+  }
+  .quote-result h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:19px;
+    font-weight:600;
+    color:#f2fbfa;
+    margin:10px 0 8px;
+    text-align:left;
+  }
+  .quote-result p{
+    color:var(--text-mute);
+    font-size:13.6px;
+    line-height:1.6;
+    max-width:52ch;
+    margin:0 0 20px;
+    text-align:left;
+  }
+  .quote-result .price-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    color:var(--cyan);
+    margin-bottom:4px;
+  }
+  .quote-result .price-note{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--text-faint);
+    margin-bottom:20px;
+  }
+  .btn-whatsapp{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 24px;
+    background:#1fae70;
+    color:#04140c;
+    font-weight:600;
+    font-size:14px;
+    border-radius:3px;
+    transition:transform .18s, box-shadow .18s;
+  }
+  .btn-whatsapp:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(31,174,112,.25); }
+  .quote-restart{
+    display:inline-block;
+    margin-top:16px;
+    margin-left:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--text-faint);
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .quote-restart:hover{ color:var(--cyan-dim); }
+
+  @media(max-width:640px){
+    .quote-flow{ padding-left:26px; }
+    .quote-step::before{ left:-26px; }
+  }
+
+  footer{
+    padding:40px 6vw;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--text-faint);
+    flex-wrap:wrap;
+    gap:14px;
+  }
+
+  .reveal{
+    opacity:.06;
+    filter:blur(4px);
+    transform:translateY(-18px) scale(.98);
+    transition:opacity .55s cubic-bezier(.2,.7,.2,1), transform .55s cubic-bezier(.2,.7,.2,1), filter .55s ease;
+    will-change:opacity, transform, filter;
+  }
+  .reveal.in{
+    opacity:1;
+    filter:blur(0);
+    transform:translateY(0) scale(1);
+  }
+  body.scroll-dir-up .reveal:not(.in){
+    transform:translateY(18px) scale(.98);
+  }
+  @media (max-width:640px){
+    .reveal{ transform:translateY(-10px) scale(.99); filter:blur(3px); }
+    body.scroll-dir-up .reveal:not(.in){ transform:translateY(10px) scale(.99); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal.in{ opacity:1; transform:none; filter:none; transition:none; }
+  }
+
+  /* ===== Transición entre páginas (Diseño · Mantenimiento · Montajes) ===== */
+  @view-transition{ navigation:auto; }
+  ::view-transition-old(root){
+    animation:380ms cubic-bezier(.4,0,.2,1) both nd-page-exit;
+  }
+  ::view-transition-new(root){
+    animation:560ms cubic-bezier(.16,1,.3,1) both nd-page-enter;
+  }
+  @keyframes nd-page-exit{
+    from{ opacity:1; filter:blur(0); transform:scale(1); }
+    to{ opacity:0; filter:blur(6px); transform:scale(.98); }
+  }
+  /* Entrada de Diseño: barrido tipo escaneo de plano, de arriba hacia abajo */
+  @keyframes nd-page-enter{
+    from{ clip-path:inset(0 0 100% 0); filter:brightness(1.5); }
+    60%{ filter:brightness(1.15); }
+    to{ clip-path:inset(0 0 0% 0); filter:brightness(1); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    ::view-transition-old(root), ::view-transition-new(root){ animation:none; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="grid-glow"></div>
+<div class="cursor-glow"></div>
+<div class="noise"></div>
+
+<div class="page-frame">
+<svg id="bus-svg" aria-hidden="true"></svg>
+
+<div class="symbol-field" aria-hidden="true">
+  <!-- Contactor: bobina + 3 polos de potencia (norma IEC 60617) -->
+  <svg class="drift" width="100" height="120" style="left:4%; top:8%; animation-delay:-2s;" viewBox="0 0 100 120">
+    <rect x="18" y="4" width="34" height="18"/>
+    <line x1="35" y1="0" x2="35" y2="4"/>
+    <text class="lbl" x="56" y="16">KM1</text>
+    <line x1="26" y1="30" x2="26" y2="42"/><line x1="26" y1="52" x2="26" y2="64"/>
+    <line x1="26" y1="42" x2="34" y2="47"/>
+    <line x1="44" y1="30" x2="44" y2="42"/><line x1="44" y1="52" x2="44" y2="64"/>
+    <line x1="44" y1="42" x2="52" y2="47"/>
+    <line x1="62" y1="30" x2="62" y2="42"/><line x1="62" y1="52" x2="62" y2="64"/>
+    <line x1="62" y1="42" x2="70" y2="47"/>
+    <text class="lbl" x="20" y="80">1/L1</text><text class="lbl" x="38" y="80">3/L2</text><text class="lbl" x="56" y="80">5/L3</text>
+  </svg>
+
+  <!-- Motor trifásico -->
+  <svg class="accent drift" width="70" height="70" style="left:86%; top:6%; animation-delay:-6s;" viewBox="0 0 70 70">
+    <circle cx="35" cy="35" r="20"/>
+    <text x="29" y="41" font-size="15">M</text>
+    <text x="26" y="58" font-size="8">3~</text>
+  </svg>
+
+  <!-- Interruptor automático / breaker -->
+  <svg width="70" height="110" style="left:12%; top:56%;" viewBox="0 0 70 110">
+    <line x1="24" y1="0" x2="24" y2="34"/>
+    <rect x="14" y="30" width="20" height="9" transform="rotate(-32 24 34)"/>
+    <line x1="24" y1="34" x2="40" y2="58"/>
+    <line x1="24" y1="72" x2="24" y2="110"/>
+    <line x1="14" y1="72" x2="34" y2="72" stroke-dasharray="2 2"/>
+    <text class="lbl" x="42" y="60">Q1</text>
+    <text class="lbl" x="42" y="72">In 63A</text>
+  </svg>
+
+  <!-- Bobina de relé auxiliar -->
+  <svg class="drift" width="90" height="60" style="left:70%; top:66%; animation-delay:-9s;" viewBox="0 0 90 60">
+    <rect x="10" y="10" width="40" height="20"/>
+    <line x1="0" y1="20" x2="10" y2="20"/>
+    <line x1="50" y1="20" x2="60" y2="20"/>
+    <text class="lbl" x="14" y="24" font-size="8">K2</text>
+  </svg>
+
+  <!-- Puesta a tierra -->
+  <svg width="50" height="50" style="left:46%; top:84%;" viewBox="0 0 50 50">
+    <line x1="25" y1="0" x2="25" y2="18"/>
+    <line x1="12" y1="18" x2="38" y2="18"/>
+    <line x1="17" y1="24" x2="33" y2="24"/>
+    <line x1="21" y1="30" x2="29" y2="30"/>
+  </svg>
+
+  <!-- Fusible -->
+  <svg class="accent" width="60" height="46" style="left:58%; top:30%;" viewBox="0 0 60 46">
+    <rect x="20" y="6" width="20" height="34"/>
+    <line x1="30" y1="0" x2="30" y2="6"/>
+    <line x1="30" y1="40" x2="30" y2="46"/>
+    <text class="lbl" x="44" y="26">F1 · 10A</text>
+  </svg>
+
+  <!-- Transformador de dos devanados con núcleo -->
+  <svg width="64" height="100" style="left:6%; top:32%;" viewBox="0 0 64 100">
+    <line x1="24" y1="0" x2="24" y2="18"/>
+    <path d="M24 18a8 8 0 0 1 0 16 8 8 0 0 1 0 16 8 8 0 0 1 0 16" fill="none"/>
+    <line x1="30" y1="16" x2="30" y2="68"/>
+    <line x1="34" y1="16" x2="34" y2="68"/>
+    <path d="M40 18a8 8 0 0 0 0 16 8 8 0 0 0 0 16 8 8 0 0 0 0 16" fill="none"/>
+    <line x1="40" y1="66" x2="40" y2="84"/>
+    <text class="lbl" x="10" y="96">T1 · 300kVA</text>
+  </svg>
+
+  <!-- Seccionador -->
+  <svg class="drift" width="60" height="90" style="left:90%; top:26%; animation-delay:-4s;" viewBox="0 0 60 90">
+    <line x1="20" y1="0" x2="20" y2="30"/>
+    <line x1="20" y1="30" x2="42" y2="10"/>
+    <circle cx="42" cy="10" r="3"/>
+    <line x1="20" y1="55" x2="20" y2="90"/>
+    <text class="lbl" x="24" y="50">QS1</text>
+  </svg>
+
+  <!-- Banco de capacitores -->
+  <svg width="60" height="60" style="left:24%; top:48%;" viewBox="0 0 60 60">
+    <line x1="30" y1="4" x2="30" y2="24"/>
+    <line x1="18" y1="24" x2="42" y2="24"/>
+    <line x1="18" y1="30" x2="42" y2="30"/>
+    <line x1="30" y1="30" x2="30" y2="50"/>
+    <text class="lbl" x="34" y="20">C1</text>
+  </svg>
+
+  <!-- Relé térmico de sobrecarga -->
+  <svg class="accent" width="70" height="50" style="left:92%; top:52%;" viewBox="0 0 70 50">
+    <path d="M8 10 L8 25 L22 25 L22 10 L36 10 L36 25 L50 25 L50 10"/>
+    <line x1="0" y1="17" x2="8" y2="17"/><line x1="50" y1="17" x2="58" y2="17"/>
+    <text class="lbl" x="10" y="42">F2 · OL</text>
+  </svg>
+
+  <!-- Bloque PLC -->
+  <svg width="64" height="46" style="left:44%; top:6%;" viewBox="0 0 64 46">
+    <rect x="6" y="4" width="52" height="38" rx="1"/>
+    <line x1="0" y1="12" x2="6" y2="12"/><line x1="0" y1="24" x2="6" y2="24"/><line x1="0" y1="34" x2="6" y2="34"/>
+    <line x1="58" y1="12" x2="64" y2="12"/><line x1="58" y1="24" x2="64" y2="24"/><line x1="58" y1="34" x2="64" y2="34"/>
+    <text class="lbl" x="16" y="26">PLC</text>
+  </svg>
+
+  <!-- Voltímetro -->
+  <svg class="drift" width="54" height="54" style="left:14%; top:78%; animation-delay:-7s;" viewBox="0 0 54 54">
+    <circle cx="27" cy="27" r="19"/>
+    <text x="21" y="33" font-size="13">V</text>
+  </svg>
+
+  <!-- Pulsador normalmente abierto -->
+  <svg width="56" height="60" style="left:36%; top:66%;" viewBox="0 0 56 60">
+    <line x1="0" y1="34" x2="18" y2="34"/>
+    <line x1="18" y1="28" x2="18" y2="40"/><line x1="30" y1="28" x2="30" y2="40"/>
+    <line x1="30" y1="34" x2="48" y2="34"/>
+    <line x1="24" y1="24" x2="24" y2="10"/>
+    <line x1="17" y1="10" x2="31" y2="10"/>
+    <text class="lbl" x="14" y="52">S2</text>
+  </svg>
+
+  <!-- Relé de tiempo -->
+  <svg class="accent drift" width="60" height="60" style="left:64%; top:92%; animation-delay:-11s;" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="18"/>
+    <path d="M30 30 30 18 A12 12 0 0 1 40 36" fill="none"/>
+    <text class="lbl" x="20" y="54">KT1</text>
+  </svg>
+</div>
+
+<div class="panel-sketch" aria-hidden="true">
+  <svg viewBox="0 0 400 320">
+    <rect class="box" x="10" y="10" width="380" height="300" rx="4"/>
+    <rect class="box" x="30" y="30" width="150" height="90" rx="2"/>
+    <text class="lbl" x="36" y="46">TABLERO TB-01</text>
+    <line class="comp" x1="50" y1="60" x2="50" y2="100"/>
+    <rect class="comp" x="40" y="60" width="20" height="14" transform="rotate(-25 50 67)"/>
+    <line class="comp" x1="90" y1="55" x2="90" y2="105"/>
+    <rect class="comp" x="76" y="70" width="28" height="14"/>
+    <line class="comp" x1="140" y1="55" x2="140" y2="105"/>
+    <circle class="comp" cx="140" cy="90" r="12"/>
+    <text class="lbl" x="128" y="94">M</text>
+
+    <rect class="box" x="220" y="30" width="150" height="90" rx="2"/>
+    <text class="lbl" x="226" y="46">CONTROL</text>
+    <rect class="comp" x="250" y="60" width="30" height="16"/>
+    <text class="lbl" x="256" y="72">K1</text>
+    <rect class="comp" x="300" y="60" width="30" height="16"/>
+    <text class="lbl" x="306" y="72">K2</text>
+    <line class="comp" x1="240" y1="95" x2="360" y2="95"/>
+    <line class="comp" x1="260" y1="95" x2="260" y2="105"/>
+    <line class="comp" x1="300" y1="95" x2="300" y2="105"/>
+    <line class="comp" x1="340" y1="95" x2="340" y2="105"/>
+
+    <line class="box" x1="20" y1="150" x2="380" y2="150"/>
+    <text class="lbl" x="30" y="146">L1</text>
+    <line class="box" x1="20" y1="165" x2="380" y2="165"/>
+    <text class="lbl" x="30" y="161">L2</text>
+    <line class="box" x1="20" y1="180" x2="380" y2="180"/>
+    <text class="lbl" x="30" y="176">L3</text>
+    <line class="box" x1="20" y1="200" x2="380" y2="200"/>
+    <text class="lbl" x="30" y="196">N</text>
+
+    <rect class="comp" x="60" y="230" width="60" height="50" rx="2"/>
+    <text class="lbl" x="70" y="245">PLC</text>
+    <line class="comp" x1="70" y1="255" x2="110" y2="255"/>
+    <line class="comp" x1="70" y1="265" x2="110" y2="265"/>
+
+    <circle class="comp" cx="220" cy="255" r="18"/>
+    <text class="lbl" x="208" y="259">M</text>
+    <text class="lbl" x="205" y="270">3~</text>
+
+    <rect class="comp" x="290" y="235" width="50" height="14" transform="rotate(-90 315 242)"/>
+    <text class="lbl" x="300" y="290">Q2</text>
+  </svg>
+</div>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <polygon class="mark-cube" points="12,6 6.8,9 6.8,15 12,18 17.2,15 17.2,9" fill="none" stroke="#3fe8d4" stroke-width="1"/>
+        <line class="mark-spoke" x1="12" y1="12" x2="12" y2="6" stroke="#3fe8d4" stroke-width="1"/>
+        <line class="mark-spoke" x1="12" y1="12" x2="6.8" y2="15" stroke="#3fe8d4" stroke-width="1"/>
+        <line class="mark-spoke" x1="12" y1="12" x2="17.2" y2="15" stroke="#3fe8d4" stroke-width="1"/>
+        <circle class="mark-core" cx="12" cy="12" r="1" fill="#3fe8d4"/>
+        <g class="mark-satellites">
+          <g class="mark-node mark-node-1" transform="translate(6.8,9)">
+            <g class="mark-node-spin">
+              <circle r="1.15" fill="#071a1e" stroke="#B6FF2E" stroke-width="1.1"/>
+              <line x1="0" y1="0" x2="0" y2="-1.15" stroke="#B6FF2E" stroke-width="0.5"/>
+            </g>
+          </g>
+          <g class="mark-node mark-node-2" transform="translate(17.2,9)">
+            <g class="mark-node-spin">
+              <circle r="1.15" fill="#071a1e" stroke="#D97706" stroke-width="1.1"/>
+              <line x1="0" y1="0" x2="0" y2="-1.15" stroke="#D97706" stroke-width="0.5"/>
+            </g>
+          </g>
+          <g class="mark-node mark-node-3" transform="translate(12,18)">
+            <g class="mark-node-spin">
+              <circle r="1.15" fill="#071a1e" stroke="#3fe8d4" stroke-width="1.1"/>
+              <line x1="0" y1="0" x2="0" y2="-1.15" stroke="#3fe8d4" stroke-width="0.5"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">NODO<span>·</span>3D</div>
+      <div class="brand-sub">INGENIERÍA ELÉCTRICA</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-links">
+      <a href="./" class="nav-link is-active" style="--dest:var(--cyan);">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <rect x="6" y="6" width="12" height="12" rx="1"/>
+            <line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/>
+            <line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-label">Diseño</span>
+      </a>
+      <a href="mantenimiento-proximamente.html" class="nav-link" style="--dest:#B6FF2E;">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <path d="M4 16a8 8 0 0 1 16 0"/>
+            <line x1="12" y1="16" x2="16" y2="10"/>
+            <circle cx="12" cy="16" r="1.4"/>
+            <line x1="2" y1="16" x2="4" y2="16"/><line x1="20" y1="16" x2="22" y2="16"/>
+          </svg>
+        </span>
+        <span class="nav-label">Mantenim.</span>
+      </a>
+      <a href="montajes-proximamente.html" class="nav-link" style="--dest:#D97706;">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
+            <path d="M4 20 4 13 11 13 11 7 17 7 17 4.5"/>
+            <rect x="14" y="1" width="6" height="6" rx="1"/>
+          </svg>
+        </span>
+        <span class="nav-label">Montajes</span>
+      </a>
+    </div>
+
+    <div class="nav-links-mobile">
+      <a href="./" class="nav-link-m is-active" aria-label="Diseño">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3fe8d4" stroke-width="1.4" stroke-linecap="round">
+          <rect x="6" y="6" width="12" height="12" rx="1"/>
+          <line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/>
+          <line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>
+        </svg>
+      </a>
+      <a href="mantenimiento-proximamente.html" class="nav-link-m" aria-label="Mantenimiento">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#B6FF2E" stroke-width="1.4" stroke-linecap="round">
+          <path d="M4 16a8 8 0 0 1 16 0"/>
+          <line x1="12" y1="16" x2="16" y2="10"/>
+          <circle cx="12" cy="16" r="1.4"/>
+          <line x1="2" y1="16" x2="4" y2="16"/><line x1="20" y1="16" x2="22" y2="16"/>
+        </svg>
+      </a>
+      <a href="montajes-proximamente.html" class="nav-link-m" aria-label="Montajes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.4" stroke-linecap="round">
+          <path d="M4 20 4 13 11 13 11 7 17 7 17 4.5"/>
+          <rect x="14" y="1" width="6" height="6" rx="1"/>
+        </svg>
+      </a>
+    </div>
+
+    <a href="#contacto" class="cta-top">Solicitar cotización</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">Ingeniería eléctrica &amp; modelado 3D</div>
+    <h1>Modelado 3D y planos eléctricos <em>listos para construir</em>.</h1>
+    <p class="hero-sub">
+      Convertimos los requerimientos de un proyecto eléctrico en documentación técnica ejecutable:
+      modelo 3D del tablero o instalación, esquemas de control y potencia, y diagramas unifilares
+      con memoria de cálculo. Trabajamos en Eplan, Inventor, Revit Electrical y AutoCAD.
+    </p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">
+        Cotizar proyecto
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </a>
+      <a href="#servicios" class="btn-secondary">Ver servicios</a>
+    </div>
+
+    <div class="schematic-strip" aria-hidden="true">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path class="wire" d="M0,60 H180 V20 H420 V90 H700 V60 H900 V30 H1200"/>
+        <path class="wire alt" d="M0,95 H120 V50 H300" />
+        <circle class="node" cx="180" cy="60" r="4"/>
+        <circle class="node" cx="420" cy="20" r="4"/>
+        <circle class="node" cx="700" cy="90" r="4"/>
+        <circle class="node-pulse" cx="900" cy="60" r="3"/>
+        <circle class="node" cx="1000" cy="30" r="4"/>
+        <text class="tag-label" x="185" y="45">Q1</text>
+        <text class="tag-label" x="425" y="112">TB-04</text>
+        <text class="tag-label" x="905" y="45">K2</text>
+      </svg>
+    </div>
+  </section>
+
+  <section id="servicios">
+    <span data-bus-node="SEC-01 · SERVICIOS" style="position:absolute; top:0; left:0; width:1px; height:1px;"></span>
+    <div class="section-head reveal">
+      <div>
+        <div class="section-tag">// Servicios</div>
+        <h2>Seis disciplinas, un mismo estándar de precisión</h2>
+      </div>
+      <p>Cada plano o modelo se entrega según normas de dibujo técnico (IEC/NFPA según el proyecto), listo para que taller, obra o un tercero lo revise sin ambigüedades.</p>
+    </div>
+
+    <div class="atom-wrap reveal">
+      <div class="atom-diagram" id="atomDiagram">
+        <div class="atom-nucleus"></div>
+
+        <div class="atom-guide guide-a"></div>
+        <div class="atom-guide guide-b"></div>
+        <div class="atom-guide guide-c"></div>
+
+        <div class="atom-node" data-service="1" data-ring="a" style="--pos:0deg;">
+          <div class="node-inner"><span class="node-num mono">01</span></div>
+        </div>
+        <div class="atom-node" data-service="4" data-ring="a" style="--pos:180deg;">
+          <div class="node-inner"><span class="node-num mono">04</span></div>
+        </div>
+
+        <div class="atom-node" data-service="2" data-ring="b" style="--pos:60deg;">
+          <div class="node-inner"><span class="node-num mono">02</span></div>
+        </div>
+        <div class="atom-node" data-service="5" data-ring="b" style="--pos:240deg;">
+          <div class="node-inner"><span class="node-num mono">05</span></div>
+        </div>
+
+        <div class="atom-node" data-service="3" data-ring="c" style="--pos:120deg;">
+          <div class="node-inner"><span class="node-num mono">03</span></div>
+        </div>
+        <div class="atom-node" data-service="6" data-ring="c" style="--pos:300deg;">
+          <div class="node-inner"><span class="node-num mono">06</span></div>
+        </div>
+      </div>
+
+      <div class="atom-detail" id="atomDetail">
+        <p class="atom-hint">Selecciona un electrón para ver el detalle de cada servicio</p>
+
+        <div class="atom-panel" data-panel="1">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <rect class="dim" x="140" y="14" width="150" height="196" rx="2"/>
+            <line class="dim" x1="140" y1="60" x2="290" y2="60"/>
+            <text class="lbl" x="146" y="30">TB-01</text>
+            <line x1="165" y1="14" x2="165" y2="34"/>
+            <rect class="accent" x="156" y="30" width="18" height="8" transform="rotate(-30 165 34)"/>
+            <line x1="165" y1="34" x2="178" y2="52"/>
+            <line x1="165" y1="52" x2="165" y2="60"/>
+            <text class="lbl" x="182" y="52">Q1</text>
+            <line x1="215" y1="14" x2="215" y2="60"/>
+            <rect x="200" y="34" width="30" height="18"/>
+            <text class="lbl" x="203" y="52">KM1</text>
+            <line x1="265" y1="14" x2="265" y2="60"/>
+            <circle class="accent" cx="265" cy="80" r="18"/>
+            <text class="lbl" x="257" y="83">M</text>
+            <line x1="150" y1="100" x2="280" y2="100"/>
+            <line x1="150" y1="112" x2="280" y2="112"/>
+            <line x1="150" y1="124" x2="280" y2="124"/>
+            <circle cx="165" cy="100" r="2"/><circle class="accent" cx="215" cy="112" r="2"/><circle cx="245" cy="124" r="2"/>
+            <rect x="150" y="150" width="120" height="46" rx="1"/>
+            <text class="lbl" x="156" y="163">BOM</text>
+            <line x1="156" y1="172" x2="260" y2="172"/>
+            <line x1="156" y1="182" x2="260" y2="182"/>
+            <line class="accent" x1="156" y1="192" x2="230" y2="192"/>
+          </svg>
+          <div class="idx mono">01</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/>
+          </svg>
+          <h3>Modelado 3D en Eplan</h3>
+          <p>Modelo 3D del tablero en Eplan Pro Panel: ubicación real de cada componente, recorrido físico del cableado y lista de materiales (BOM) sincronizada con el esquema eléctrico.</p>
+          <span class="platform mono">EPLAN</span>
+        </div>
+
+        <div class="atom-panel" data-panel="2">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <path d="M150 60 200 40 260 60 260 130 200 150 150 130Z"/>
+            <path class="dim" d="M150 60 200 80 260 60"/>
+            <path class="dim" d="M200 80 200 150"/>
+            <circle class="accent" cx="200" cy="115" r="10"/>
+            <line x1="163" y1="72" x2="163" y2="118"/><line x1="220" y1="52" x2="220" y2="98"/>
+            <line class="dim" x1="150" y1="170" x2="260" y2="170"/>
+            <line class="dim" x1="150" y1="164" x2="150" y2="176"/><line class="dim" x1="260" y1="164" x2="260" y2="176"/>
+            <text class="lbl" x="192" y="182">110 mm</text>
+            <line class="dim" x1="278" y1="60" x2="278" y2="130"/>
+            <line class="dim" x1="272" y1="60" x2="284" y2="60"/><line class="dim" x1="272" y1="130" x2="284" y2="130"/>
+            <text class="lbl" x="252" y="24">ENS-04</text>
+          </svg>
+          <div class="idx mono">02</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/>
+          </svg>
+          <h3>Diseño mecánico en Inventor</h3>
+          <p>Diseño de gabinetes, soportería y piezas a medida en Autodesk Inventor: planos de fabricación acotados y despiece, listos para enviar a taller.</p>
+          <span class="platform mono">INVENTOR</span>
+        </div>
+
+        <div class="atom-panel" data-panel="3">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <line class="dim" x1="140" y1="30" x2="290" y2="30"/><text class="lbl" x="146" y="24">N+2</text>
+            <line class="dim" x1="140" y1="90" x2="290" y2="90"/><text class="lbl" x="146" y="84">N+1</text>
+            <line class="dim" x1="140" y1="150" x2="290" y2="150"/><text class="lbl" x="146" y="144">N+0</text>
+            <rect class="accent" x="160" y="100" width="16" height="40"/>
+            <line x1="176" y1="110" x2="230" y2="110" stroke-dasharray="3 3"/>
+            <line x1="176" y1="130" x2="260" y2="130" stroke-dasharray="3 3"/>
+            <circle cx="230" cy="110" r="3"/><circle class="accent" cx="260" cy="130" r="3"/>
+            <path d="M230 110 230 40" stroke-dasharray="3 3"/>
+            <circle cx="230" cy="40" r="3"/>
+            <text class="lbl" x="163" y="98">TB</text>
+          </svg>
+          <div class="idx mono">03</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-8h6v8"/>
+          </svg>
+          <h3>Modelado BIM en Revit Electrical</h3>
+          <p>Modelo eléctrico de la instalación —tableros, canalizaciones, iluminación y fuerza— dentro del modelo BIM del edificio, coordinado con arquitectura y estructura para detectar interferencias antes de obra.</p>
+          <span class="platform mono">REVIT ELECTRICAL</span>
+        </div>
+
+        <div class="atom-panel" data-panel="4">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <line class="dim" x1="140" y1="24" x2="140" y2="196"/>
+            <line class="dim" x1="270" y1="24" x2="270" y2="196"/>
+            <text class="lbl" x="134" y="16">L1</text><text class="lbl" x="264" y="16">N</text>
+            <line x1="140" y1="55" x2="175" y2="55"/>
+            <line x1="175" y1="49" x2="175" y2="61"/><line x1="185" y1="49" x2="185" y2="61"/>
+            <line x1="185" y1="55" x2="230" y2="55"/><circle class="accent" cx="245" cy="55" r="12"/><text class="lbl" x="240" y="59">K1</text>
+            <line x1="255" y1="55" x2="270" y2="55"/>
+            <text class="lbl" x="176" y="44">S1</text>
+            <line x1="140" y1="100" x2="160" y2="100"/>
+            <circle class="accent" cx="160" cy="100" r="4"/>
+            <line x1="164" y1="100" x2="230" y2="100"/><circle cx="245" cy="100" r="12"/><text class="lbl" x="240" y="104">K2</text>
+            <line x1="255" y1="100" x2="270" y2="100"/>
+            <text class="lbl" x="150" y="90">K1</text>
+            <line x1="140" y1="145" x2="195" y2="145"/>
+            <rect x="195" y="137" width="18" height="16"/><text class="lbl" x="198" y="149">F2</text>
+            <line x1="213" y1="145" x2="270" y2="145"/>
+            <line x1="140" y1="180" x2="270" y2="180" stroke-dasharray="2 4"/>
+            <text class="lbl" x="150" y="192">REF 03/2</text>
+          </svg>
+          <div class="idx mono">04</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M4 6h16M4 12h10M4 18h16"/><circle cx="18" cy="12" r="1.6"/>
+          </svg>
+          <h3>Diseños eléctricos esquemáticos</h3>
+          <p>Planos esquemáticos de control, fuerza e instrumentación en AutoCAD Electrical: numeración de bornes, referencias cruzadas entre hojas y catálogo de dispositivos, listos para el armado del tablero.</p>
+          <span class="platform mono">AUTOCAD</span>
+        </div>
+
+        <div class="atom-panel" data-panel="5">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <text class="lbl" x="196" y="18">13.2 kV</text>
+            <line x1="190" y1="22" x2="190" y2="48"/>
+            <circle cx="190" cy="62" r="14"/><circle cx="190" cy="86" r="14"/>
+            <text class="lbl" x="206" y="78">T1 · 300 kVA</text>
+            <line x1="190" y1="100" x2="190" y2="120"/>
+            <rect class="accent" x="176" y="120" width="28" height="16" transform="rotate(-18 190 128)"/>
+            <text class="lbl" x="208" y="130">Q1 · 400 A</text>
+            <line x1="190" y1="138" x2="190" y2="155"/>
+            <line x1="140" y1="155" x2="270" y2="155"/>
+            <line x1="160" y1="155" x2="160" y2="200"/>
+            <line x1="205" y1="155" x2="205" y2="200"/>
+            <line x1="250" y1="155" x2="250" y2="200"/>
+            <rect x="150" y="165" width="20" height="13" transform="rotate(-20 160 171)"/>
+            <rect class="accent" x="195" y="165" width="20" height="13" transform="rotate(-20 205 171)"/>
+            <rect x="240" y="165" width="20" height="13" transform="rotate(-20 250 171)"/>
+            <text class="lbl" x="150" y="212">Q2</text><text class="lbl" x="195" y="212">Q3</text><text class="lbl" x="240" y="212">Q4</text>
+          </svg>
+          <div class="idx mono">05</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M4 12h4l2-7 4 14 2-7h4"/>
+          </svg>
+          <h3>Diagramas unifilares</h3>
+          <p>Diagrama unifilar de control y potencia con la selección y coordinación de protecciones (breakers, fusibles, relés), respaldado por la memoria de cálculo del diseño.</p>
+          <span class="platform mono">ACAD</span>
+        </div>
+
+        <div class="atom-panel" data-panel="6">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <rect x="140" y="20" width="150" height="110" rx="2"/>
+            <line class="dim" x1="152" y1="42" x2="240" y2="42"/>
+            <line class="dim" x1="152" y1="60" x2="260" y2="60"/>
+            <line class="accent" x1="152" y1="78" x2="210" y2="78"/>
+            <line class="dim" x1="152" y1="96" x2="230" y2="96"/>
+            <path class="accent" d="M195 70a10 8 0 0 1 20-3 8 7 0 0 1 10 8 8 7 0 0 1-8 8h-24a9 8 0 0 1-6-13 9 8 0 0 1 8-0"/>
+            <text class="lbl" x="196" y="106">REV. 03</text>
+            <circle cx="225" cy="162" r="28"/>
+            <line x1="245" y1="182" x2="270" y2="207"/>
+            <text class="lbl" x="204" y="166">AS-BUILT</text>
+          </svg>
+          <div class="idx mono">06</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 3v18M3 12h18" stroke-linecap="round"/><circle cx="12" cy="12" r="8"/>
+          </svg>
+          <h3>Revisión y as-built</h3>
+          <p>Actualización de planos existentes a la condición real del sitio después de cambios en obra: se corrigen las diferencias entre lo dibujado y lo instalado, y se entrega en DWG o PDF.</p>
+          <span class="platform mono">MULTIPLATAFORMA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proceso">
+    <span data-bus-node="SEC-02 · PROCESO" style="position:absolute; top:0; left:0; width:1px; height:1px;"></span>
+    <div class="section-head reveal">
+      <div>
+        <div class="section-tag">// Flujo de trabajo</div>
+        <h2>De los requerimientos al plano firmado</h2>
+      </div>
+      <p>Un proceso de cuatro etapas, con un punto de revisión conjunta antes de cada entrega, para garantizar que el resultado final se ajuste exactamente a lo acordado.</p>
+    </div>
+
+    <div class="process">
+      <div class="process-rail"></div>
+
+      <div class="process-step reveal">
+        <div class="code mono">PASO 01</div>
+        <h4>Levantamiento de requerimientos</h4>
+        <p>Se revisan planos base, cargas, normativa aplicable y alcance del proyecto (nuevo diseño, ampliación o as-built).</p>
+      </div>
+
+      <div class="process-step reveal">
+        <div class="code mono">PASO 02</div>
+        <h4>Modelado y esquemáticos preliminares</h4>
+        <p>Desarrollo del diseño en la plataforma correspondiente (Eplan, Inventor, Revit Electrical o AutoCAD) con primer paquete de revisión.</p>
+      </div>
+
+      <div class="process-step reveal">
+        <div class="code mono">PASO 03</div>
+        <h4>Coordinación y ajustes</h4>
+        <p>Retroalimentación del cliente, verificación de interferencias y actualización de diagramas unifilares y listas de materiales.</p>
+      </div>
+
+      <div class="process-step reveal">
+        <div class="code mono">PASO 04</div>
+        <h4>Entrega final</h4>
+        <p>Paquete de planos listo para taller u obra, en los formatos requeridos (DWG, PDF, DXF) con control de versiones.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <span data-bus-node="SEC-03 · STACK" style="position:absolute; top:0; left:0; width:1px; height:1px;"></span>
+    <div class="section-head reveal">
+      <div>
+        <div class="section-tag">// Herramientas</div>
+        <h2>Plataformas de trabajo</h2>
+      </div>
+      <p>Cada tipo de entregable se produce en el software adecuado para su propósito: modelado 3D, coordinación BIM o dibujo esquemático.</p>
+    </div>
+    <div class="chip-grid">
+
+      <div class="chip-card reveal">
+        <div class="chip-led"></div>
+        <div class="chip-badge" style="--c1:#123338;--c2:#1f9aa3;">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="6" width="16" height="20" rx="1.5"/>
+            <line x1="12" y1="12" x2="20" y2="12"/>
+            <line x1="12" y1="16" x2="20" y2="16"/>
+            <line x1="12" y1="20" x2="17" y2="20"/>
+            <line x1="4" y1="10" x2="8" y2="10"/><line x1="4" y1="18" x2="8" y2="18"/>
+            <line x1="24" y1="10" x2="28" y2="10"/><line x1="24" y1="18" x2="28" y2="18"/>
+          </svg>
+        </div>
+        <h4>EPLAN</h4>
+        <div class="chip-sub"><span>Electric P8</span><span>Pro Panel</span></div>
+      </div>
+
+      <div class="chip-card reveal">
+        <div class="chip-led"></div>
+        <div class="chip-badge" style="--c1:#132b3d;--c2:#1a7c8a;">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 5 27 11v10L16 27 5 21V11Z"/>
+            <path d="M16 5v22M5 11l11 6 11-6"/>
+          </svg>
+        </div>
+        <h4>Inventor</h4>
+        <div class="chip-sub"><span>Piezas</span><span>Ensambles</span><span>Planos</span></div>
+      </div>
+
+      <div class="chip-card reveal">
+        <div class="chip-led"></div>
+        <div class="chip-badge" style="--c1:#12303a;--c2:#20a0a3;">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 26V12l10-7 10 7v14"/>
+            <line x1="6" y1="17" x2="26" y2="17"/>
+            <line x1="12" y1="17" x2="12" y2="26"/><line x1="20" y1="17" x2="20" y2="26"/>
+            <path d="M14 12h4l-2 3z"/>
+          </svg>
+        </div>
+        <h4>Revit Electrical</h4>
+        <div class="chip-sub"><span>Tableros</span><span>Canalizaciones</span><span>Iluminación</span></div>
+      </div>
+
+      <div class="chip-card reveal">
+        <div class="chip-led"></div>
+        <div class="chip-badge" style="--c1:#123338;--c2:#2bb5a6;">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="16" cy="16" r="10.5"/>
+            <line x1="16" y1="2.5" x2="16" y2="6.5"/>
+            <line x1="16" y1="25.5" x2="16" y2="29.5"/>
+            <path d="M16 10a6 6 0 0 1 6 6" stroke-dasharray="1.5 3"/>
+            <circle cx="16" cy="16" r="1.6" fill="#eafffb" stroke="none"/>
+          </svg>
+        </div>
+        <h4>AutoCAD</h4>
+        <div class="chip-sub"><span>Electrical</span><span>2D / 3D</span></div>
+      </div>
+
+    </div>
+
+    <p class="trademark-note">
+      EPLAN, Autodesk Inventor, Revit y AutoCAD son marcas registradas de sus respectivos propietarios
+      (EPLAN Software &amp; Service GmbH y Autodesk, Inc.).
+    </p>
+  </section>
+
+  <section id="tableros">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-tag">// Tableros realizados</div>
+        <h2>Proyectos que hemos diseñado</h2>
+      </div>
+      <p>Cada proyecto se podrá revisar en plano 2D o girar en 3D, con el mismo modelo usado en el diseño.</p>
+    </div>
+
+    <div class="boards-grid" id="boardsGrid">
+      <!-- Se llena por JS desde el arreglo `boards`. Vacío por ahora: se muestra el estado "próximamente". -->
+    </div>
+  </section>
+
+  <div class="board-modal" id="boardModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="board-modal-panel">
+      <div class="board-modal-head">
+        <div>
+          <h3 id="boardModalTitle">—</h3>
+          <p id="boardModalDesc"></p>
+        </div>
+        <button class="board-modal-close" id="boardModalClose" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="view-tabs">
+        <button class="view-tab is-active" data-view="2d">2D</button>
+        <button class="view-tab" data-view="3d">3D</button>
+      </div>
+
+      <div class="view-stage">
+        <div class="view-pane is-active" data-pane="2d">
+          <img id="boardImg2d" alt="">
+        </div>
+        <div class="view-pane" data-pane="3d">
+          <div id="board3dMount" style="width:100%; height:100%;"></div>
+          <div class="view-loading" id="board3dLoading" style="display:none;">Cargando modelo 3D…</div>
+          <div class="view-hint">Arrastra para rotar · rueda para zoom</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="cta-section" id="contacto">
+    <span data-bus-node="SEC-04 · CONTACTO" style="position:absolute; top:0; left:0; width:1px; height:1px;"></span>
+
+    <div class="section-head reveal" style="border:none; padding:0; margin-bottom:0;">
+      <div class="section-tag">// Contacto</div>
+      <h2>Cuéntanos tu proyecto en tres pasos</h2>
+      <p>Completa esta breve evaluación para recibir una referencia inmediata o continuar la conversación por WhatsApp.</p>
+    </div>
+
+    <div class="quote-flow reveal" id="quoteFlow">
+      <div class="quote-rail"></div>
+
+      <div class="quote-step" data-step="1">
+        <div class="quote-step-label mono">PASO 01</div>
+        <h4>¿Qué necesitas?</h4>
+        <div class="quote-options">
+          <button class="quote-block" type="button" data-q="1" data-value="Modelado 3D (Eplan / Inventor / Revit)">Modelado 3D</button>
+          <button class="quote-block" type="button" data-q="1" data-value="Esquemático o unifilar en AutoCAD">Esquemático / unifilar</button>
+          <button class="quote-block" type="button" data-q="1" data-value="Revisión de planos existentes / as-built">Revisión / as-built</button>
+          <button class="quote-block" type="button" data-q="1" data-value="Aún no lo tengo claro">No estoy seguro</button>
+        </div>
+        <div class="quote-answer mono">
+          <span>→</span><span class="answer-text"></span>
+          <span class="change-btn" data-change="1">cambiar</span>
+        </div>
+      </div>
+
+      <div class="quote-step locked" data-step="2">
+        <div class="quote-step-label mono">PASO 02</div>
+        <h4>¿Cuál es el alcance?</h4>
+        <div class="quote-options">
+          <button class="quote-block" type="button" data-q="2" data-value="Un tablero o gabinete" data-scope="basico">Un tablero / gabinete</button>
+          <button class="quote-block" type="button" data-q="2" data-value="Una instalación completa" data-scope="grande">Instalación completa</button>
+          <button class="quote-block" type="button" data-q="2" data-value="Una planta o varias áreas" data-scope="grande">Planta / varias áreas</button>
+        </div>
+        <div class="quote-answer mono">
+          <span>→</span><span class="answer-text"></span>
+          <span class="change-btn" data-change="2">cambiar</span>
+        </div>
+      </div>
+
+      <div class="quote-step locked" data-step="3">
+        <div class="quote-step-label mono">PASO 03</div>
+        <h4>¿Tienes planos o información base?</h4>
+        <div class="quote-options">
+          <button class="quote-block" type="button" data-q="3" data-value="Sí, tengo planos o datos previos" data-base="con-planos">Sí, tengo planos</button>
+          <button class="quote-block" type="button" data-q="3" data-value="No, empezamos desde cero" data-base="desde-cero">Desde cero</button>
+        </div>
+        <div class="quote-answer mono">
+          <span>→</span><span class="answer-text"></span>
+          <span class="change-btn" data-change="3">cambiar</span>
+        </div>
+      </div>
+
+      <div class="quote-result" id="quoteResult">
+        <div class="result-tag mono" id="resultTag">// Resultado</div>
+        <h4 id="resultTitle"></h4>
+        <p id="resultText"></p>
+        <div id="resultPrice"></div>
+        <a href="#" target="_blank" rel="noopener" class="btn-whatsapp" id="whatsappBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.4.1-.1.2-.2.2-.4.1-.1 0-.3 0-.4 0-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9 0 1.1.8 2.2.9 2.4.1.2 1.6 2.4 3.8 3.4.5.2.9.4 1.3.5.6.2 1.1.1 1.5.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3Z"/></svg>
+          Continuar por WhatsApp
+        </a>
+        <span class="quote-restart" id="quoteRestart">Empezar de nuevo</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>NODO 3D — Diseño eléctrico &amp; modelado 3D</div>
+  <div>EPLAN · INVENTOR · REVIT ELECTRICAL · AUTOCAD</div>
+</footer>
+</div><!-- /.page-frame -->
+
+<script>
+  // Linterna que sigue al cursor e ilumina la grilla de fondo a su paso
+  const root = document.documentElement;
+  let mouseTicking = false;
+  window.addEventListener('mousemove', (e)=>{
+    if(!mouseTicking){
+      requestAnimationFrame(()=>{
+        root.style.setProperty('--mx', e.clientX + 'px');
+        root.style.setProperty('--my', e.clientY + 'px');
+        mouseTicking = false;
+      });
+      mouseTicking = true;
+    }
+  }, {passive:true});
+
+  // Detecta la dirección del scroll para que los elementos se desvanezcan
+  // hacia el lado por el que van saliendo de pantalla
+  let lastY = window.scrollY;
+  let ticking = false;
+  function updateScrollDir(){
+    const y = window.scrollY;
+    if(Math.abs(y - lastY) > 2){
+      document.body.classList.toggle('scroll-dir-up', y < lastY);
+      document.body.classList.toggle('scroll-dir-down', y >= lastY);
+      lastY = y;
+    }
+    ticking = false;
+  }
+  window.addEventListener('scroll', ()=>{
+    if(!ticking){ requestAnimationFrame(updateScrollDir); ticking = true; }
+  }, {passive:true});
+
+  // Fade in al entrar, fade out al salir (ambas direcciones)
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      e.target.classList.toggle('in', e.isIntersecting);
+    });
+  }, {threshold:.15, rootMargin:'-92px 0px -4% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ===== Bus unifilar: conecta el marcador de cada sección con una línea + nodos =====
+  function buildBus(){
+    const svg = document.getElementById('bus-svg');
+    if(!svg) return;
+    svg.innerHTML = '';
+    const markers = Array.from(document.querySelectorAll('[data-bus-node]'));
+    if(markers.length < 2) return;
+
+    const frame = document.querySelector('.page-frame');
+    const frameTop = frame.getBoundingClientRect().top + window.scrollY;
+    const frameWidth = frame.offsetWidth;
+    const frameHeight = frame.offsetHeight;
+    // viewBox en píxeles reales (1:1) para que línea, nodos y texto no se deformen
+    svg.setAttribute('viewBox', `0 0 ${frameWidth} ${frameHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+
+    const x = Math.max(28, frameWidth * 0.032); // posición horizontal fija del bus, en px reales
+    const pts = markers.map(m=>{
+      const r = m.getBoundingClientRect();
+      const y = r.top + window.scrollY - frameTop + r.height/2;
+      return { y, label: m.dataset.busNode };
+    });
+
+    const ns = 'http://www.w3.org/2000/svg';
+    const line = document.createElementNS(ns,'path');
+    let d = `M ${x} ${pts[0].y}`;
+    pts.forEach(p=> d += ` L ${x} ${p.y}`);
+    line.setAttribute('d', d);
+    line.setAttribute('class','bus-line');
+    svg.appendChild(line);
+
+    pts.forEach((p, i)=>{
+      const g = document.createElementNS(ns,'g');
+      g.setAttribute('class','bus-node' + (i===0?' on':''));
+      g.dataset.busIndex = i;
+
+      const c = document.createElementNS(ns,'circle');
+      c.setAttribute('cx', x); c.setAttribute('cy', p.y); c.setAttribute('r', 4);
+      g.appendChild(c);
+
+      const core = document.createElementNS(ns,'circle');
+      core.setAttribute('class','bus-node-core');
+      core.setAttribute('cx', x); core.setAttribute('cy', p.y); core.setAttribute('r', 1.6);
+      g.appendChild(core);
+
+      svg.appendChild(g);
+    });
+  }
+
+  function activateBusNode(idx){
+    document.querySelectorAll('#bus-svg .bus-node').forEach((n,i)=>{
+      n.classList.toggle('on', i<=idx);
+    });
+  }
+
+  window.addEventListener('load', ()=>{ buildBus(); });
+
+  // ===== Encuesta / calculadora de alcance -> WhatsApp =====
+  (function(){
+    // ⚠️ CONFIGURACIÓN: reemplaza estos valores por los tuyos reales antes de publicar.
+    const WHATSAPP_NUMBER = '573105626308'; // código de país + número, sin espacios ni "+"
+    const PRICE_RANGE_TEXT = 'Desde $800.000 COP'; // rango de referencia para alcance básico
+
+    const answers = {}; // {1: {value, extra}, 2: {...}, 3: {...}}
+    const flow = document.getElementById('quoteFlow');
+    if(!flow) return;
+
+    const steps = Array.from(flow.querySelectorAll('.quote-step'));
+    const result = document.getElementById('quoteResult');
+    const resultTag = document.getElementById('resultTag');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultText = document.getElementById('resultText');
+    const resultPrice = document.getElementById('resultPrice');
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    const restartBtn = document.getElementById('quoteRestart');
+
+    function getStep(n){ return flow.querySelector(`.quote-step[data-step="${n}"]`); }
+
+    function answerStep(stepEl, btn){
+      const q = btn.dataset.q;
+      answers[q] = {
+        value: btn.dataset.value,
+        scope: btn.dataset.scope || null,
+        base: btn.dataset.base || null
+      };
+      stepEl.querySelectorAll('.quote-block').forEach(b=> b.classList.toggle('selected', b===btn));
+      stepEl.classList.add('answered');
+      stepEl.querySelector('.answer-text').textContent = btn.dataset.value;
+
+      const nextStep = stepEl.nextElementSibling;
+      if(nextStep && nextStep.classList.contains('quote-step')){
+        nextStep.classList.remove('locked');
+      }
+
+      // ¿Todos los pasos respondidos?
+      if(steps.every(s => s.classList.contains('answered'))){
+        renderResult();
+      }
+    }
+
+    function changeStep(n){
+      const stepEl = getStep(n);
+      stepEl.classList.remove('answered');
+      stepEl.querySelectorAll('.quote-block').forEach(b=> b.classList.remove('selected'));
+      delete answers[n];
+      // bloquear y limpiar los pasos siguientes
+      for(let i = Number(n)+1; i <= steps.length; i++){
+        const s = getStep(i);
+        if(!s) continue;
+        s.classList.add('locked');
+        s.classList.remove('answered');
+        s.querySelectorAll('.quote-block').forEach(b=> b.classList.remove('selected'));
+        delete answers[i];
+      }
+      result.classList.remove('in');
+    }
+
+    function buildWhatsAppMessage(isBasic){
+      const lines = [
+        'Hola, quiero cotizar un proyecto:',
+        `• Necesito: ${answers[1]?.value || '-'}`,
+        `• Alcance: ${answers[2]?.value || '-'}`,
+        `• Información base: ${answers[3]?.value || '-'}`
+      ];
+      if(isBasic){
+        lines.push(`• Vi la referencia de precio: ${PRICE_RANGE_TEXT}`);
+      }
+      return encodeURIComponent(lines.join('\n'));
+    }
+
+    function renderResult(){
+      const isBasic = answers[2]?.scope === 'basico' && answers[3]?.base === 'con-planos';
+
+      if(isBasic){
+        resultTag.textContent = '// Alcance básico';
+        resultTitle.textContent = 'Referencia disponible para tu proyecto';
+        resultText.textContent = 'Para un tablero o gabinete con planos o datos previos, este es un valor de referencia. El monto final se confirma al revisar el detalle del proyecto.';
+        resultPrice.innerHTML = `<span class="price-tag mono">${PRICE_RANGE_TEXT}</span><span class="price-note mono">Referencial · sujeto a revisión</span>`;
+      } else {
+        resultTag.textContent = '// Alcance a medida';
+        resultTitle.textContent = 'Este proyecto requiere revisión personalizada';
+        resultText.textContent = 'Dado el alcance (instalación completa, planta o proyecto desde cero), preferimos evaluarlo directamente antes de establecer un valor, para no ofrecer una referencia que no aplique al proyecto.';
+        resultPrice.innerHTML = '';
+      }
+
+      whatsappBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(isBasic)}`;
+      result.classList.add('in');
+    }
+
+    flow.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.quote-block');
+      if(btn){
+        const stepEl = btn.closest('.quote-step');
+        if(!stepEl.classList.contains('locked')) answerStep(stepEl, btn);
+        return;
+      }
+      const change = e.target.closest('.change-btn');
+      if(change){ changeStep(change.dataset.change); }
+    });
+
+    restartBtn.addEventListener('click', ()=>{
+      steps.forEach((s, i)=>{
+        s.classList.remove('answered');
+        s.classList.toggle('locked', i > 0);
+        s.querySelectorAll('.quote-block').forEach(b=> b.classList.remove('selected'));
+        const answerText = s.querySelector('.answer-text');
+        if(answerText) answerText.textContent = '';
+      });
+      Object.keys(answers).forEach(k=> delete answers[k]);
+      result.classList.remove('in');
+    });
+
+  })();
+  window.addEventListener('resize', ()=>{ buildBus(); });
+
+  // ===== Diagrama de átomo: selección de servicio =====
+  (function(){
+    const diagram = document.getElementById('atomDiagram');
+    const detail = document.getElementById('atomDetail');
+    if(!diagram || !detail) return;
+
+    const nodes = Array.from(diagram.querySelectorAll('.atom-node'));
+    const panels = Array.from(detail.querySelectorAll('.atom-panel'));
+    let pinnedId = null;
+    let hoverId = null;
+    let leaveTimer = null;
+
+    function findNode(id){ return nodes.find(n => n.dataset.service === id); }
+
+    function showPanel(id, pinned){
+      nodes.forEach(n => n.classList.toggle('active', n.dataset.service === id));
+      panels.forEach(p => {
+        const match = p.dataset.panel === id;
+        p.classList.toggle('active', match);
+        p.classList.toggle('pinned', match && pinned);
+        if(match){
+          requestAnimationFrame(()=> p.classList.add('show'));
+        } else {
+          p.classList.remove('show');
+        }
+      });
+      detail.classList.add('has-active');
+      diagram.classList.add('has-active');
+    }
+
+    function hidePanel(){
+      nodes.forEach(n => n.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active', 'show', 'pinned'));
+      detail.classList.remove('has-active');
+      diagram.classList.remove('has-active');
+    }
+
+    nodes.forEach(node=>{
+      const inner = node.querySelector('.node-inner');
+      const id = node.dataset.service;
+
+      // Al pasar el cursor: ese electrón se detiene y se muestra la vista previa.
+      // Los demás electrones siguen girando con normalidad.
+      inner.addEventListener('mouseenter', ()=>{
+        if(pinnedId) return; // hay uno fijado: no interferir
+        clearTimeout(leaveTimer);
+        // Si veníamos de otro electrón en vista previa (cambio rápido de uno a otro),
+        // liberarlo explícitamente: el timeout de salida pudo haberse cancelado sin ejecutarse.
+        if(hoverId && hoverId !== id){
+          const prev = findNode(hoverId);
+          if(prev) prev.classList.remove('stopped');
+        }
+        hoverId = id;
+        node.classList.add('stopped');
+        showPanel(id, false);
+      });
+
+      // Al quitar el cursor (sin haber hecho clic): vuelve a girar y se cierra el panel.
+      // Pequeño margen para evitar parpadeos por micro-movimientos justo en el borde.
+      inner.addEventListener('mouseleave', ()=>{
+        if(pinnedId) return;
+        clearTimeout(leaveTimer);
+        leaveTimer = setTimeout(()=>{
+          node.classList.remove('stopped');
+          if(hoverId === id) hoverId = null;
+          hidePanel();
+        }, 120);
+      });
+
+      // Clic: fija la pausa de forma indefinida (con cursor encima o no) y muestra la ×.
+      inner.addEventListener('click', ()=>{
+        clearTimeout(leaveTimer);
+        hoverId = null;
+        if(pinnedId && pinnedId !== id){
+          const prev = findNode(pinnedId);
+          if(prev) prev.classList.remove('stopped');
+        }
+        pinnedId = id;
+        node.classList.add('stopped');
+        showPanel(id, true);
+      });
+    });
+
+    // Botón ×: cierra el panel y reanuda el giro de ese electrón.
+    detail.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-close]')){
+        clearTimeout(leaveTimer);
+        hoverId = null;
+        if(pinnedId){
+          const prev = findNode(pinnedId);
+          if(prev) prev.classList.remove('stopped');
+        }
+        pinnedId = null;
+        hidePanel();
+      }
+    });
+  })();
+
+  const busIo = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const idx = Array.from(document.querySelectorAll('[data-bus-node]')).indexOf(e.target);
+        activateBusNode(idx);
+      }
+    });
+  }, {threshold:.4});
+  document.querySelectorAll('[data-bus-node]').forEach(el=>busIo.observe(el));
+</script>
+
+<script type="module">
+  // ===================================================================
+  // GALERÍA + VISOR 2D/3D DE TABLEROS
+  //
+  // Para publicar un tablero real, agrega un objeto a este arreglo:
+  //   {
+  //     id: 'identificador-unico',
+  //     title: 'Nombre del proyecto',
+  //     tag: 'INDUSTRIAL' | 'COMERCIAL' | 'RESIDENCIAL',
+  //     desc: 'Descripción corta para la tarjeta y el modal',
+  //     img2d: 'ruta/al/plano-o-foto.jpg',   // vista 2D
+  //     model3d: 'ruta/al/modelo.glb'        // vista 3D, exportado desde Inventor/Revit
+  //   }
+  // La galería y el visor se generan solos a partir de este arreglo: no hace
+  // falta tocar el HTML ni el CSS para agregar, quitar o reordenar tableros.
+  // ===================================================================
+  const boards = [
+    // Vacío por ahora — se muestra el estado "próximamente" hasta el primer tablero real.
+  ];
+
+  const grid = document.getElementById('boardsGrid');
+
+  function renderBoardsGrid(){
+    if(boards.length === 0){
+      grid.innerHTML = `
+        <div class="boards-empty">
+          <svg class="rig" viewBox="0 0 220 220" aria-hidden="true">
+            <rect class="cabinet" x="60" y="60" width="100" height="140" rx="6"/>
+            <line class="rung" x1="75" y1="90" x2="145" y2="90"/>
+            <line class="rung" x1="75" y1="115" x2="145" y2="115"/>
+            <line class="rung" x1="75" y1="140" x2="145" y2="140"/>
+            <line class="crane-mast" x1="170" y1="200" x2="170" y2="20"/>
+            <line class="crane-arm" x1="170" y1="20" x2="100" y2="20"/>
+            <line class="cable" x1="100" y1="20" x2="100" y2="58"/>
+            <rect class="block" x="88" y="58" width="24" height="18" rx="2"/>
+          </svg>
+          <h3>Estamos preparando la primera galería</h3>
+          <p>Vuelve pronto para ver los primeros proyectos publicados.</p>
+        </div>
+      `;
+      return;
+    }
+    grid.innerHTML = boards.map((b,i)=>`
+      <div class="board-card reveal in" data-board-id="${b.id}">
+        <div class="idx mono">${String(i+1).padStart(2,'0')}</div>
+        <h3>${b.title}</h3>
+        <p>${b.desc}</p>
+        <span class="tagline mono">${b.tag}</span>
+      </div>
+    `).join('');
+    grid.querySelectorAll('.board-card').forEach(card=>{
+      card.addEventListener('click', ()=> openBoardModal(card.dataset.boardId));
+    });
+  }
+  renderBoardsGrid();
+
+  // ---------- Modal ----------
+  const modal = document.getElementById('boardModal');
+  const modalTitle = document.getElementById('boardModalTitle');
+  const modalDesc = document.getElementById('boardModalDesc');
+  const closeBtn = document.getElementById('boardModalClose');
+  const img2d = document.getElementById('boardImg2d');
+  const tabs = modal.querySelectorAll('.view-tab');
+  const panes = modal.querySelectorAll('.view-pane');
+  let currentBoard = null;
+
+  function openBoardModal(id){
+    const b = boards.find(x=>x.id===id);
+    if(!b) return;
+    currentBoard = b;
+    modalTitle.textContent = b.title;
+    modalDesc.textContent = b.desc;
+    img2d.src = b.img2d;
+    img2d.alt = b.title;
+    switchView('2d');
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBoardModal(){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  closeBtn.addEventListener('click', closeBoardModal);
+  modal.addEventListener('click', (e)=>{ if(e.target === modal) closeBoardModal(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('is-open')) closeBoardModal(); });
+
+  function switchView(view){
+    tabs.forEach(t=> t.classList.toggle('is-active', t.dataset.view === view));
+    panes.forEach(p=> p.classList.toggle('is-active', p.dataset.pane === view));
+    if(view === '3d' && currentBoard){
+      initOrLoad3D(currentBoard);
+    }
+  }
+  tabs.forEach(t=> t.addEventListener('click', ()=> switchView(t.dataset.view)));
+
+  // ---------- Motor 3D (Three.js), inicializado solo cuando se abre la pestaña 3D ----------
+  let three = null; // { renderer, scene, camera, controls, loader }
+  let loadedModelId = null;
+
+  async function initOrLoad3D(board){
+    const mount = document.getElementById('board3dMount');
+    const loading = document.getElementById('board3dLoading');
+
+    if(!three){
+      const THREE = await import('three');
+      const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+
+      const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      mount.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      camera.position.set(2.4, 1.8, 2.4);
+
+      const hemi = new THREE.HemisphereLight(0xdfffe8, 0x0a1210, 1.1);
+      scene.add(hemi);
+      const dir = new THREE.DirectionalLight(0xffffff, 1.4);
+      dir.position.set(3, 5, 2);
+      scene.add(dir);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.minDistance = 0.5;
+      controls.maxDistance = 20;
+
+      function resize(){
+        const w = mount.clientWidth, h = mount.clientHeight;
+        if(w===0 || h===0) return;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      new ResizeObserver(resize).observe(mount);
+      resize();
+
+      function tick(){
+        controls.update();
+        renderer.render(scene, camera);
+        requestAnimationFrame(tick);
+      }
+      tick();
+
+      three = { THREE, renderer, scene, camera, controls, mount, currentMesh:null };
+    }
+
+    if(loadedModelId === board.id) return; // ya cargado, solo cambiar de pestaña
+
+    loading.style.display = 'flex';
+    if(three.currentMesh){
+      three.scene.remove(three.currentMesh);
+      three.currentMesh = null;
+    }
+
+    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+    const loader = new GLTFLoader();
+    loader.load(
+      board.model3d,
+      (gltf)=>{
+        const obj = gltf.scene;
+        // Centrar y encuadrar el modelo automáticamente sin importar su escala original
+        const box = new three.THREE.Box3().setFromObject(obj);
+        const size = box.getSize(new three.THREE.Vector3());
+        const center = box.getCenter(new three.THREE.Vector3());
+        obj.position.sub(center);
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 2 / maxDim;
+        obj.scale.setScalar(scale);
+        three.scene.add(obj);
+        three.currentMesh = obj;
+        loadedModelId = board.id;
+        loading.style.display = 'none';
+      },
+      undefined,
+      (err)=>{
+        console.error('No se pudo cargar el modelo 3D:', err);
+        loading.textContent = 'No se pudo cargar el modelo 3D.';
+      }
+    );
+  }
+</script>
+
+</body>
+</html>
