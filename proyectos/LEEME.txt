@@ -1,0 +1,14 @@
+CARPETA DE PROYECTOS REALIZADOS
+===============================
+Un subdirectorio por proyecto, con nombre en minusculas y sin espacios:
+
+  proyectos/tablero-potencia-aa-01/   (proyecto ya publicado)
+      plano-completo.png, vista-frontal.png, descripcion-de-partes.png,
+      lista-de-partes.png  -> vista 2D
+      modelo.glb           -> vista 3D
+
+Para agregar otro proyecto: crear su carpeta aqui y registrarlo en el arreglo
+`boards` del index.html (la plantilla esta comentada justo encima).
+
+Limites: GitHub acepta hasta 25 MB por archivo al subir desde el navegador.
+Recomendado: imagenes de 1-3 MB y modelos .glb de menos de 10 MB.

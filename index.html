@@ -791,10 +791,11 @@
   /* ===== Software: tarjetas tipo chip electrónico ===== */
   .chip-grid{
     display:grid;
-    grid-template-columns:repeat(4, 1fr);
+    grid-template-columns:repeat(5, 1fr);
     gap:28px 22px;
     margin-top:12px;
   }
+  @media(max-width:1180px){ .chip-grid{ grid-template-columns:repeat(3,1fr); } }
   @media(max-width:920px){ .chip-grid{ grid-template-columns:repeat(2,1fr); } }
   @media(max-width:480px){ .chip-grid{ grid-template-columns:1fr; } }
 
@@ -920,6 +921,71 @@
   @media (prefers-reduced-motion: reduce){ .boards-empty .rig .cabinet, .boards-empty .rig .block{ animation:none !important; } }
   .boards-empty h3{ font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:600; color:#f2fbfa; margin-bottom:10px; }
   .boards-empty p{ color:var(--text-mute); font-size:14px; max-width:48ch; margin:0 auto; }
+
+  /* ===== Selector de proyectos por software ===== */
+  #tableros{ scroll-margin-top:90px; }
+  .chip-card[data-software]{ cursor:pointer; }
+  .chip-card[data-software]:focus-visible{ outline:1px solid var(--cyan); outline-offset:6px; }
+  .chip-card.is-selected{ border-color:var(--cyan); box-shadow:0 0 0 1px var(--cyan), 0 18px 40px rgba(0,0,0,.4); }
+  .chip-card.is-selected::before,
+  .chip-card.is-selected::after{ background-image:repeating-linear-gradient(90deg, var(--cyan) 0 5px, transparent 5px 15px); }
+  .chip-card.is-selected .chip-led{ background:var(--cyan); box-shadow:0 0 8px rgba(63,232,212,.7); }
+  .chip-cta{
+    margin-top:14px; display:flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--cyan-dim);
+  }
+  .chip-cta svg{ width:12px; height:12px; transition:transform .25s ease; }
+  .chip-card:hover .chip-cta svg{ transform:translateX(3px); }
+  .chip-card.is-empty .chip-cta{ color:var(--text-faint); }
+  .chip-card.is-empty .chip-cta svg{ display:none; }
+
+  .proj-filter{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+  .proj-filter-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 14px; border:1px solid var(--line); border-radius:3px; background:transparent;
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:.04em; color:var(--text-mute);
+    cursor:pointer; transition:border-color .2s, color .2s, background .2s;
+  }
+  .proj-filter-btn:hover{ border-color:var(--teal-deep); color:var(--text); }
+  .proj-filter-btn.is-active{ background:var(--cyan); border-color:var(--cyan); color:#03181a; }
+  .proj-filter-btn.is-empty:not(.is-active){ color:var(--text-faint); }
+  .proj-count{ font-size:10px; padding:1px 6px; border-radius:2px; background:rgba(255,255,255,.06); }
+  .proj-filter-btn.is-active .proj-count{ background:rgba(3,24,26,.18); }
+
+  .board-card:focus-visible{ outline:1px solid var(--cyan); outline-offset:-1px; }
+  .board-meta{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .board-meta .tagline{ margin-top:0; }
+  .view-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--cyan-dim);
+    border:1px solid var(--line); padding:4px 9px; border-radius:2px;
+  }
+  .board-modal-sw{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan-dim); margin-bottom:6px; }
+  .view-tabs[hidden]{ display:none; }
+  .view-open{
+    position:absolute; top:10px; right:12px; z-index:2;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.05em; color:var(--text-mute);
+    background:rgba(4,10,11,.7); border:1px solid var(--line); padding:6px 10px; border-radius:3px;
+    transition:color .2s, border-color .2s;
+  }
+  .view-open:hover{ color:var(--cyan); border-color:var(--cyan); }
+  .view-pane.has-thumbs{ padding-bottom:58px; }
+  .view-thumbs{
+    position:absolute; left:0; right:0; bottom:0; display:flex; justify-content:center; gap:6px; padding:8px;
+    background:linear-gradient(transparent, rgba(4,10,11,.9));
+  }
+  .view-thumbs:empty{ display:none; }
+  .view-thumbs .view-thumb{
+    width:52px; height:36px; padding:0; border:1px solid var(--line); border-radius:3px; background:var(--bg-0);
+    overflow:hidden; cursor:pointer; opacity:.7; transition:opacity .2s, border-color .2s;
+  }
+  .view-thumbs .view-thumb.is-active{ border-color:var(--cyan); opacity:1; }
+  .view-thumbs .view-thumb img{ width:100%; height:100%; max-width:none; max-height:none; object-fit:cover; display:block; }
+  @media(max-width:640px){
+    .board-modal{ padding:3vh 3vw; }
+    .board-modal-panel{ padding:18px 14px 20px; }
+    .view-stage{ aspect-ratio:4/3; }
+    .proj-filter-btn{ padding:8px 11px; }
+  }
 
   /* Modal del visor */
   .board-modal{
@@ -1841,11 +1907,11 @@
         <div class="section-tag">// Herramientas</div>
         <h2>Plataformas de trabajo</h2>
       </div>
-      <p>Cada tipo de entregable se produce en el software adecuado para su propósito: modelado 3D, coordinación BIM o dibujo esquemático.</p>
+      <p>Cada tipo de entregable se produce en el software adecuado para su propósito: modelado 3D, coordinación BIM, dibujo esquemático o cálculo lumínico.</p>
     </div>
     <div class="chip-grid">
 
-      <div class="chip-card reveal">
+      <div class="chip-card reveal" data-software="eplan" role="button" tabindex="0" aria-label="Ver proyectos realizados en EPLAN">
         <div class="chip-led"></div>
         <div class="chip-badge" style="--c1:#123338;--c2:#1f9aa3;">
           <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1859,9 +1925,10 @@
         </div>
         <h4>EPLAN</h4>
         <div class="chip-sub"><span>Electric P8</span><span>Pro Panel</span></div>
+        <div class="chip-cta"><span class="chip-cta-text">Próximamente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       </div>
 
-      <div class="chip-card reveal">
+      <div class="chip-card reveal" data-software="inventor" role="button" tabindex="0" aria-label="Ver proyectos realizados en Inventor">
         <div class="chip-led"></div>
         <div class="chip-badge" style="--c1:#132b3d;--c2:#1a7c8a;">
           <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1871,9 +1938,10 @@
         </div>
         <h4>Inventor</h4>
         <div class="chip-sub"><span>Piezas</span><span>Ensambles</span><span>Planos</span></div>
+        <div class="chip-cta"><span class="chip-cta-text">Próximamente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       </div>
 
-      <div class="chip-card reveal">
+      <div class="chip-card reveal" data-software="revit" role="button" tabindex="0" aria-label="Ver proyectos realizados en Revit Electrical">
         <div class="chip-led"></div>
         <div class="chip-badge" style="--c1:#12303a;--c2:#20a0a3;">
           <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1885,9 +1953,10 @@
         </div>
         <h4>Revit Electrical</h4>
         <div class="chip-sub"><span>Tableros</span><span>Canalizaciones</span><span>Iluminación</span></div>
+        <div class="chip-cta"><span class="chip-cta-text">Próximamente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       </div>
 
-      <div class="chip-card reveal">
+      <div class="chip-card reveal" data-software="autocad" role="button" tabindex="0" aria-label="Ver proyectos realizados en AutoCAD">
         <div class="chip-led"></div>
         <div class="chip-badge" style="--c1:#123338;--c2:#2bb5a6;">
           <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1900,27 +1969,46 @@
         </div>
         <h4>AutoCAD</h4>
         <div class="chip-sub"><span>Electrical</span><span>2D / 3D</span></div>
+        <div class="chip-cta"><span class="chip-cta-text">Próximamente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+
+      <div class="chip-card reveal" data-software="dialux" role="button" tabindex="0" aria-label="Ver proyectos realizados en DIALux">
+        <div class="chip-led"></div>
+        <div class="chip-badge" style="--c1:#10303a;--c2:#27b3a2;">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#eafffb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="9" y1="6" x2="23" y2="6"/>
+            <path d="M12 6l-3 9h14l-3-9"/>
+            <line x1="11" y1="19" x2="8" y2="26"/>
+            <line x1="16" y1="19" x2="16" y2="27"/>
+            <line x1="21" y1="19" x2="24" y2="26"/>
+          </svg>
+        </div>
+        <h4>DIALux</h4>
+        <div class="chip-sub"><span>Iluminación</span><span>Luminotecnia</span></div>
+        <div class="chip-cta"><span class="chip-cta-text">Próximamente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       </div>
 
     </div>
 
     <p class="trademark-note">
-      EPLAN, Autodesk Inventor, Revit y AutoCAD son marcas registradas de sus respectivos propietarios
-      (EPLAN Software &amp; Service GmbH y Autodesk, Inc.).
+      EPLAN, Autodesk Inventor, Revit, AutoCAD y DIALux son marcas registradas de sus respectivos propietarios
+      (EPLAN Software &amp; Service GmbH, Autodesk, Inc. y DIAL GmbH).
     </p>
   </section>
 
   <section id="tableros">
     <div class="section-head reveal">
       <div>
-        <div class="section-tag">// Tableros realizados</div>
+        <div class="section-tag">// Proyectos realizados</div>
         <h2>Proyectos que hemos diseñado</h2>
       </div>
-      <p>Cada proyecto se podrá revisar en plano 2D o girar en 3D, con el mismo modelo usado en el diseño.</p>
+      <p>Elige una plataforma para ver un proyecto realizado con ella: planos en 2D o modelos 3D que puedes girar.</p>
     </div>
 
+    <div class="proj-filter" id="projFilter" role="tablist" aria-label="Filtrar proyectos por software"></div>
+
     <div class="boards-grid" id="boardsGrid">
-      <!-- Se llena por JS desde el arreglo `boards`. Vacío por ahora: se muestra el estado "próximamente". -->
+      <!-- Se llena por JS desde el arreglo `boards`, filtrado por la plataforma elegida. -->
     </div>
   </section>
 
@@ -1928,31 +2016,35 @@
     <div class="board-modal-panel">
       <div class="board-modal-head">
         <div>
+          <div class="board-modal-sw mono" id="boardModalSw"></div>
           <h3 id="boardModalTitle">—</h3>
           <p id="boardModalDesc"></p>
         </div>
         <button class="board-modal-close" id="boardModalClose" aria-label="Cerrar">×</button>
       </div>
 
-      <div class="view-tabs">
-        <button class="view-tab is-active" data-view="2d">2D</button>
-        <button class="view-tab" data-view="3d">3D</button>
+      <div class="view-tabs" id="boardTabs">
+        <button class="view-tab is-active" id="tab2d" data-view="2d">2D</button>
+        <button class="view-tab" id="tab3d" data-view="3d">3D</button>
       </div>
 
       <div class="view-stage">
-        <div class="view-pane is-active" data-pane="2d">
+        <div class="view-pane is-active" id="pane2d" data-pane="2d">
           <img id="boardImg2d" alt="">
+          <a class="view-open mono" id="boardOpenFull" href="#" target="_blank" rel="noopener">Abrir tamaño completo ↗</a>
+          <div class="view-thumbs" id="boardThumbs"></div>
         </div>
-        <div class="view-pane" data-pane="3d">
+        <div class="view-pane" id="pane3d" data-pane="3d">
           <div id="board3dMount" style="width:100%; height:100%;"></div>
           <div class="view-loading" id="board3dLoading" style="display:none;">Cargando modelo 3D…</div>
-          <div class="view-hint">Arrastra para rotar · rueda para zoom</div>
+          <div class="view-hint">Arrastra para rotar · rueda o pellizco para zoom</div>
         </div>
       </div>
     </div>
   </div>
 
-  <section class="cta-section" id="contacto">
+  
+<section class="cta-section" id="contacto">
     <span data-bus-node="SEC-04 · CONTACTO" style="position:absolute; top:0; left:0; width:1px; height:1px;"></span>
 
     <div class="section-head reveal" style="border:none; padding:0; margin-bottom:0;">
@@ -2353,79 +2445,192 @@
 
 <script type="module">
   // ===================================================================
-  // GALERÍA + VISOR 2D/3D DE TABLEROS
+  // PROYECTOS REALIZADOS — filtrados por software, con visor 2D / 3D
   //
-  // Para publicar un tablero real, agrega un objeto a este arreglo:
+  // Para publicar un proyecto, agrega un objeto al arreglo `boards`:
   //   {
-  //     id: 'identificador-unico',
+  //     id: 'tablero-inventor-01',            // único, sin espacios
+  //     software: 'inventor',                 // eplan | inventor | revit | autocad | dialux
   //     title: 'Nombre del proyecto',
-  //     tag: 'INDUSTRIAL' | 'COMERCIAL' | 'RESIDENCIAL',
-  //     desc: 'Descripción corta para la tarjeta y el modal',
-  //     img2d: 'ruta/al/plano-o-foto.jpg',   // vista 2D
-  //     model3d: 'ruta/al/modelo.glb'        // vista 3D, exportado desde Inventor/Revit
+  //     tag: 'TABLERO',                       // etiqueta corta (TABLERO, ILUMINACIÓN, PLANOS...)
+  //     desc: 'Descripción corta',
+  //     img2d: 'proyectos/tablero-inventor-01/vista.png',   // una imagen, o un arreglo de varias
+  //     model3d: 'proyectos/tablero-inventor-01/modelo.glb', // opcional
+  //     view3d: { position:[x,y,z], target:[x,y,z] }         // opcional: encuadre inicial de la cámara 3D
   //   }
-  // La galería y el visor se generan solos a partir de este arreglo: no hace
-  // falta tocar el HTML ni el CSS para agregar, quitar o reordenar tableros.
+  // Cada proyecto debe tener img2d, model3d o ambos: el visor muestra solo las vistas que existan.
+  // Los cuadros de software, los filtros y los contadores se actualizan solos.
   // ===================================================================
-  const boards = [
-    // Vacío por ahora — se muestra el estado "próximamente" hasta el primer tablero real.
+  const SOFTWARE = [
+    { id:'eplan',    name:'EPLAN' },
+    { id:'inventor', name:'Inventor' },
+    { id:'revit',    name:'Revit Electrical' },
+    { id:'autocad',  name:'AutoCAD' },
+    { id:'dialux',   name:'DIALux' }
   ];
 
-  const grid = document.getElementById('boardsGrid');
-
-  function renderBoardsGrid(){
-    if(boards.length === 0){
-      grid.innerHTML = `
-        <div class="boards-empty">
-          <svg class="rig" viewBox="0 0 220 220" aria-hidden="true">
-            <rect class="cabinet" x="60" y="60" width="100" height="140" rx="6"/>
-            <line class="rung" x1="75" y1="90" x2="145" y2="90"/>
-            <line class="rung" x1="75" y1="115" x2="145" y2="115"/>
-            <line class="rung" x1="75" y1="140" x2="145" y2="140"/>
-            <line class="crane-mast" x1="170" y1="200" x2="170" y2="20"/>
-            <line class="crane-arm" x1="170" y1="20" x2="100" y2="20"/>
-            <line class="cable" x1="100" y1="20" x2="100" y2="58"/>
-            <rect class="block" x="88" y="58" width="24" height="18" rx="2"/>
-          </svg>
-          <h3>Estamos preparando la primera galería</h3>
-          <p>Vuelve pronto para ver los primeros proyectos publicados.</p>
-        </div>
-      `;
-      return;
+  const boards = [
+    {
+      id: 'tablero-potencia-aa-01',
+      software: 'inventor',
+      title: 'Tablero de potencia para aire acondicionado',
+      tag: 'TABLERO',
+      desc: 'Tablero metálico de 400 × 500 × 250 mm con totalizador de 60 A, barraje de 125 A (3F + N), breaker de 50 A, guardamotor de 1–4 A y barraje de puesta a tierra.',
+      img2d: [
+        'proyectos/tablero-potencia-aa-01/plano-completo.png',
+        'proyectos/tablero-potencia-aa-01/vista-frontal.png',
+        'proyectos/tablero-potencia-aa-01/descripcion-de-partes.png',
+        'proyectos/tablero-potencia-aa-01/lista-de-partes.png'
+      ],
+      model3d: 'proyectos/tablero-potencia-aa-01/modelo.glb',
+      // Encuadre pensado para este modelo: la puerta está abierta hacia +Z, por eso la cámara mira desde el lado contrario
+      view3d: { position: [2.244, 0.658, -0.958], target: [-0.269, -0.222, 0.424] }
     }
-    grid.innerHTML = boards.map((b,i)=>`
-      <div class="board-card reveal in" data-board-id="${b.id}">
-        <div class="idx mono">${String(i+1).padStart(2,'0')}</div>
-        <h3>${b.title}</h3>
-        <p>${b.desc}</p>
-        <span class="tagline mono">${b.tag}</span>
-      </div>
-    `).join('');
-    grid.querySelectorAll('.board-card').forEach(card=>{
-      card.addEventListener('click', ()=> openBoardModal(card.dataset.boardId));
+    // Más proyectos: agrégalos aquí con la misma estructura.
+  ];
+
+  const softwareName = (id)=> (SOFTWARE.find(s=>s.id===id) || {name:id}).name;
+  const countFor = (id)=> boards.filter(b=>b.software===id).length;
+  const images2d = (b)=> Array.isArray(b.img2d) ? b.img2d : (b.img2d ? [b.img2d] : []);
+
+  const grid = document.getElementById('boardsGrid');
+  const filterBar = document.getElementById('projFilter');
+  const chips = document.querySelectorAll('.chip-card[data-software]');
+  let activeSoftware = 'all';
+
+  // ---------- Filtros y cuadros de software ----------
+  function renderFilter(){
+    const items = [{id:'all', name:'Todos', n:boards.length}]
+      .concat(SOFTWARE.map(s=>({ id:s.id, name:s.name, n:countFor(s.id) })));
+    filterBar.innerHTML = items.map(it=>{
+      const cls = 'proj-filter-btn' + (it.id===activeSoftware ? ' is-active' : '') + (it.n===0 && it.id!=='all' ? ' is-empty' : '');
+      return `<button type="button" class="${cls}" data-software="${it.id}" role="tab" aria-selected="${it.id===activeSoftware}">${it.name}<span class="proj-count">${it.n}</span></button>`;
+    }).join('');
+  }
+  filterBar.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.proj-filter-btn');
+    if(btn) setSoftware(btn.dataset.software, false);
+  });
+
+  function renderChips(){
+    chips.forEach(chip=>{
+      const id = chip.dataset.software, n = countFor(id);
+      chip.classList.toggle('is-empty', n===0);
+      chip.classList.toggle('is-selected', id===activeSoftware);
+      const cta = chip.querySelector('.chip-cta-text');
+      if(cta) cta.textContent = n===0 ? 'Próximamente' : (n===1 ? 'Ver 1 proyecto' : `Ver ${n} proyectos`);
     });
   }
-  renderBoardsGrid();
+  chips.forEach(chip=>{
+    const go = ()=> setSoftware(chip.dataset.software, true);
+    chip.addEventListener('click', go);
+    chip.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); go(); } });
+  });
+
+  function setSoftware(id, scroll){
+    activeSoftware = id;
+    renderFilter();
+    renderChips();
+    renderBoardsGrid();
+    if(scroll) document.getElementById('tableros').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  // ---------- Galería ----------
+  function emptyState(swName){
+    const title = swName ? `Aún no hay proyectos en ${swName}` : 'Estamos preparando la primera galería';
+    const text = swName
+      ? 'Estamos preparando el primer proyecto realizado con esta plataforma. Vuelve pronto.'
+      : 'Vuelve pronto para ver los primeros proyectos publicados.';
+    return `
+      <div class="boards-empty">
+        <svg class="rig" viewBox="0 0 220 220" aria-hidden="true">
+          <rect class="cabinet" x="60" y="60" width="100" height="140" rx="6"/>
+          <line class="rung" x1="75" y1="90" x2="145" y2="90"/>
+          <line class="rung" x1="75" y1="115" x2="145" y2="115"/>
+          <line class="rung" x1="75" y1="140" x2="145" y2="140"/>
+          <line class="crane-mast" x1="170" y1="200" x2="170" y2="20"/>
+          <line class="crane-arm" x1="170" y1="20" x2="100" y2="20"/>
+          <line class="cable" x1="100" y1="20" x2="100" y2="58"/>
+          <rect class="block" x="88" y="58" width="24" height="18" rx="2"/>
+        </svg>
+        <h3>${title}</h3>
+        <p>${text}</p>
+      </div>`;
+  }
+
+  function renderBoardsGrid(){
+    const list = activeSoftware==='all' ? boards : boards.filter(b=>b.software===activeSoftware);
+    if(list.length===0){
+      grid.innerHTML = emptyState(activeSoftware==='all' ? null : softwareName(activeSoftware));
+      return;
+    }
+    grid.innerHTML = list.map(b=>{
+      const v2 = images2d(b).length>0, v3 = !!b.model3d;
+      return `
+      <div class="board-card reveal in" data-board-id="${b.id}" role="button" tabindex="0">
+        <div class="idx mono">${softwareName(b.software).toUpperCase()}</div>
+        <h3>${b.title}</h3>
+        <p>${b.desc}</p>
+        <div class="board-meta">
+          <span class="tagline mono">${b.tag}</span>
+          ${v2 ? '<span class="view-badge">2D</span>' : ''}
+          ${v3 ? '<span class="view-badge">3D</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+    grid.querySelectorAll('.board-card').forEach(card=>{
+      const open = ()=> openBoardModal(card.dataset.boardId);
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); open(); } });
+    });
+  }
 
   // ---------- Modal ----------
   const modal = document.getElementById('boardModal');
+  const modalSw = document.getElementById('boardModalSw');
   const modalTitle = document.getElementById('boardModalTitle');
   const modalDesc = document.getElementById('boardModalDesc');
   const closeBtn = document.getElementById('boardModalClose');
+  const tabsWrap = document.getElementById('boardTabs');
+  const tab2d = document.getElementById('tab2d');
+  const tab3d = document.getElementById('tab3d');
+  const pane2d = document.getElementById('pane2d');
   const img2d = document.getElementById('boardImg2d');
+  const openFull = document.getElementById('boardOpenFull');
+  const thumbs = document.getElementById('boardThumbs');
   const tabs = modal.querySelectorAll('.view-tab');
   const panes = modal.querySelectorAll('.view-pane');
   let currentBoard = null;
+  let active3d = false;
+
+  function set2dImage(list, i){
+    img2d.src = list[i] || '';
+    img2d.alt = currentBoard.title + (list.length>1 ? ` (${i+1} de ${list.length})` : '');
+    openFull.href = list[i] || '#';
+    pane2d.classList.toggle('has-thumbs', list.length>1);
+    thumbs.innerHTML = list.length>1
+      ? list.map((src,j)=>`<button type="button" class="view-thumb${j===i?' is-active':''}" data-i="${j}" aria-label="Imagen ${j+1}"><img src="${src}" alt=""></button>`).join('')
+      : '';
+  }
+  thumbs.addEventListener('click', (e)=>{
+    const t = e.target.closest('.view-thumb');
+    if(t && currentBoard) set2dImage(images2d(currentBoard), +t.dataset.i);
+  });
 
   function openBoardModal(id){
     const b = boards.find(x=>x.id===id);
     if(!b) return;
     currentBoard = b;
+    const list = images2d(b);
+    const has2d = list.length>0, has3d = !!b.model3d;
+    modalSw.textContent = `${softwareName(b.software)} · ${b.tag}`;
     modalTitle.textContent = b.title;
     modalDesc.textContent = b.desc;
-    img2d.src = b.img2d;
-    img2d.alt = b.title;
-    switchView('2d');
+    tab2d.hidden = !has2d;
+    tab3d.hidden = !has3d;
+    tabsWrap.hidden = !(has2d && has3d); // con una sola vista no hace falta el selector
+    if(has2d) set2dImage(list, 0);
+    switchView(has2d ? '2d' : '3d');
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden','false');
     document.body.style.overflow = 'hidden';
@@ -2434,6 +2639,7 @@
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden','true');
     document.body.style.overflow = '';
+    active3d = false; // detiene el render 3D mientras el visor está cerrado
   }
   closeBtn.addEventListener('click', closeBoardModal);
   modal.addEventListener('click', (e)=>{ if(e.target === modal) closeBoardModal(); });
@@ -2442,98 +2648,132 @@
   function switchView(view){
     tabs.forEach(t=> t.classList.toggle('is-active', t.dataset.view === view));
     panes.forEach(p=> p.classList.toggle('is-active', p.dataset.pane === view));
-    if(view === '3d' && currentBoard){
-      initOrLoad3D(currentBoard);
-    }
+    active3d = (view === '3d');
+    if(view === '3d' && currentBoard && currentBoard.model3d) initOrLoad3D(currentBoard);
   }
   tabs.forEach(t=> t.addEventListener('click', ()=> switchView(t.dataset.view)));
 
-  // ---------- Motor 3D (Three.js), inicializado solo cuando se abre la pestaña 3D ----------
-  let three = null; // { renderer, scene, camera, controls, loader }
+  // ---------- Motor 3D (Three.js), se inicializa solo al abrir una vista 3D ----------
+  let three = null;
   let loadedModelId = null;
+  let loadToken = 0;
+
+  function disposeObject(obj){
+    obj.traverse((n)=>{
+      if(n.geometry) n.geometry.dispose();
+      if(n.material){
+        (Array.isArray(n.material) ? n.material : [n.material]).forEach(m=>{
+          Object.keys(m).forEach(k=>{ if(m[k] && m[k].isTexture) m[k].dispose(); });
+          m.dispose();
+        });
+      }
+    });
+  }
 
   async function initOrLoad3D(board){
     const mount = document.getElementById('board3dMount');
     const loading = document.getElementById('board3dLoading');
+    const token = ++loadToken;
 
-    if(!three){
-      const THREE = await import('three');
-      const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+    try{
+      if(!three){
+        loading.textContent = 'Cargando visor 3D…';
+        loading.style.display = 'flex';
+        const THREE = await import('three');
+        const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
 
-      const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      mount.appendChild(renderer.domElement);
+        const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        mount.appendChild(renderer.domElement);
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-      camera.position.set(2.4, 1.8, 2.4);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+        camera.position.set(2.4, 1.8, 2.4);
+        try{
+          const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+          const pmrem = new THREE.PMREMGenerator(renderer);
+          scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+          pmrem.dispose();
+        }catch(e){ console.warn('Sin iluminación de ambiente:', e); }
+        scene.add(new THREE.HemisphereLight(0xdfffe8, 0x0a1210, 0.6));
+        const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+        dir.position.set(3, 5, 2);
+        scene.add(dir);
 
-      const hemi = new THREE.HemisphereLight(0xdfffe8, 0x0a1210, 1.1);
-      scene.add(hemi);
-      const dir = new THREE.DirectionalLight(0xffffff, 1.4);
-      dir.position.set(3, 5, 2);
-      scene.add(dir);
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.minDistance = 0.5;
+        controls.maxDistance = 20;
 
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.08;
-      controls.minDistance = 0.5;
-      controls.maxDistance = 20;
+        const resize = ()=>{
+          const w = mount.clientWidth, h = mount.clientHeight;
+          if(w===0 || h===0) return;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+        };
+        new ResizeObserver(resize).observe(mount);
+        resize();
 
-      function resize(){
-        const w = mount.clientWidth, h = mount.clientHeight;
-        if(w===0 || h===0) return;
-        renderer.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
+        const tick = ()=>{
+          requestAnimationFrame(tick);
+          if(!active3d) return;
+          controls.update();
+          renderer.render(scene, camera);
+        };
+        tick();
+
+        three = { THREE, renderer, scene, camera, controls, currentMesh:null };
       }
-      new ResizeObserver(resize).observe(mount);
-      resize();
 
-      function tick(){
-        controls.update();
-        renderer.render(scene, camera);
-        requestAnimationFrame(tick);
+      if(loadedModelId === board.id){ loading.style.display = 'none'; return; }
+
+      loading.textContent = 'Cargando modelo 3D…';
+      loading.style.display = 'flex';
+      if(three.currentMesh){
+        three.scene.remove(three.currentMesh);
+        disposeObject(three.currentMesh);
+        three.currentMesh = null;
+        loadedModelId = null;
       }
-      tick();
 
-      three = { THREE, renderer, scene, camera, controls, mount, currentMesh:null };
+      const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+      new GLTFLoader().load(
+        board.model3d,
+        (gltf)=>{
+          if(token !== loadToken) return; // el usuario ya cambió de proyecto
+          const obj = gltf.scene;
+          const box = new three.THREE.Box3().setFromObject(obj);
+          const size = box.getSize(new three.THREE.Vector3());
+          const center = box.getCenter(new three.THREE.Vector3());
+          // Se escala para que el lado mayor mida 2 unidades y se desplaza (ya escalado) para centrarlo en el origen
+          const scale = 2 / (Math.max(size.x, size.y, size.z) || 1);
+          obj.scale.setScalar(scale);
+          obj.position.copy(center).multiplyScalar(-scale);
+          three.scene.add(obj);
+          three.currentMesh = obj;
+          const v = board.view3d || {};
+          three.camera.position.set(...(v.position || [2.4, 1.8, 2.4]));
+          three.controls.target.set(...(v.target || [0, 0, 0]));
+          three.controls.update();
+          loadedModelId = board.id;
+          loading.style.display = 'none';
+        },
+        undefined,
+        (err)=>{
+          console.error('No se pudo cargar el modelo 3D:', err);
+          if(token === loadToken) loading.textContent = 'No se pudo cargar el modelo 3D.';
+        }
+      );
+    }catch(err){
+      console.error('No se pudo iniciar el visor 3D:', err);
+      if(token === loadToken){ loading.textContent = 'No se pudo iniciar el visor 3D.'; loading.style.display = 'flex'; }
     }
-
-    if(loadedModelId === board.id) return; // ya cargado, solo cambiar de pestaña
-
-    loading.style.display = 'flex';
-    if(three.currentMesh){
-      three.scene.remove(three.currentMesh);
-      three.currentMesh = null;
-    }
-
-    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-    const loader = new GLTFLoader();
-    loader.load(
-      board.model3d,
-      (gltf)=>{
-        const obj = gltf.scene;
-        // Centrar y encuadrar el modelo automáticamente sin importar su escala original
-        const box = new three.THREE.Box3().setFromObject(obj);
-        const size = box.getSize(new three.THREE.Vector3());
-        const center = box.getCenter(new three.THREE.Vector3());
-        obj.position.sub(center);
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scale = 2 / maxDim;
-        obj.scale.setScalar(scale);
-        three.scene.add(obj);
-        three.currentMesh = obj;
-        loadedModelId = board.id;
-        loading.style.display = 'none';
-      },
-      undefined,
-      (err)=>{
-        console.error('No se pudo cargar el modelo 3D:', err);
-        loading.textContent = 'No se pudo cargar el modelo 3D.';
-      }
-    );
   }
+
+  // Estado inicial
+  setSoftware('all', false);
 </script>
 
 </body>
