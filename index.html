@@ -2,11 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t="light";try{var g=localStorage.getItem("nodo3d-tema");if(g==="dark"||g==="light")t=g;}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+<meta name="theme-color" content="#EEF5F6">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NODO 3D — Diseño Eléctrico &amp; Modelado 3D · Eplan · Inventor · Revit Electrical · AutoCAD</title>
-<meta name="description" content="Diseño eléctrico y modelado 3D en Eplan, Inventor y Revit Electrical, además de esquemáticos y diagramas unifilares en AutoCAD. Cotiza tu proyecto en minutos.">
+<title>NODO 3D — Diseño Eléctrico &amp; Modelado 3D · Eplan · Inventor · Revit Electrical · AutoCAD · DIALux</title>
+<meta name="description" content="Diseño eléctrico y modelado 3D en Eplan, Inventor y Revit Electrical, además de esquemáticos y diagramas unifilares en AutoCAD y cálculo de iluminación en DIALux. Cotiza tu proyecto en minutos.">
 <meta property="og:title" content="NODO 3D — Diseño Eléctrico &amp; Modelado 3D">
-<meta property="og:description" content="Modelado 3D y planos eléctricos listos para construir: Eplan, Inventor, Revit Electrical y AutoCAD.">
+<meta property="og:description" content="Modelado 3D y planos eléctricos listos para construir: Eplan, Inventor, Revit Electrical, AutoCAD y DIALux.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CO">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='5' fill='%23071a1e'/%3E%3Cpolygon points='12,6 6.8,9 6.8,15 12,18 17.2,15 17.2,9' fill='none' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='12' y2='6' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='6.8' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='17.2' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%233fe8d4'/%3E%3Ccircle cx='6.8' cy='9' r='1.15' fill='%23071a1e' stroke='%23B6FF2E' stroke-width='1.1'/%3E%3Ccircle cx='17.2' cy='9' r='1.15' fill='%23071a1e' stroke='%23D97706' stroke-width='1.1'/%3E%3Ccircle cx='12' cy='18' r='1.15' fill='%23071a1e' stroke='%233fe8d4' stroke-width='1.1'/%3E%3C/svg%3E">
@@ -27,6 +29,17 @@
     --text-mute:#8aa8a6;
     --text-faint:#4d6b69;
     --amber:#d9a441;
+    --accent-rgb:63,232,212;
+    --bg-rgb:5,15,18;
+    --on-accent:#03181a;
+    --heading:#f2fbfa;
+    --aqua:#3fe8d4;
+    --aqua-rgb:63,232,212;
+    --scrim-rgb:4,10,11;
+    --c-diseno:#3fe8d4;
+    --c-mantenim:#B6FF2E;
+    --c-montajes:#D97706;
+    color-scheme:dark;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -81,7 +94,7 @@
     inset:0;
     z-index:-3;
     pointer-events:none;
-    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(63,232,212,.10), transparent 70%);
+    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(var(--accent-rgb),.10), transparent 70%);
   }
 
   @media(hover:none){ .grid-glow, .cursor-glow{ display:none; } }
@@ -92,7 +105,7 @@
     z-index:-2;
     pointer-events:none;
     background:radial-gradient(ellipse 60% 40% at 20% -10%, rgba(31,154,163,.14), transparent 60%),
-               radial-gradient(ellipse 50% 40% at 100% 10%, rgba(63,232,212,.08), transparent 60%);
+               radial-gradient(ellipse 50% 40% at 100% 10%, rgba(var(--accent-rgb),.08), transparent 60%);
   }
 
   /* Símbolos de control/potencia flotando en el fondo, tipo boceto — por encima de la grilla */
@@ -149,7 +162,7 @@
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
     padding:20px 6vw;
-    background:rgba(5,15,18,.82);
+    background:rgba(var(--bg-rgb),.82);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
@@ -201,7 +214,7 @@
   }
   @keyframes markGlowIdle{
     0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep); }
-    50%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--cyan), 0 0 18px rgba(63,232,212,.4); }
+    50%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -8px 14px rgba(0,0,0,.4), 0 0 0 1px var(--cyan), 0 0 18px rgba(var(--accent-rgb),.4); }
   }
   @media (hover:none) and (prefers-reduced-motion: reduce){
     .brand-mark, .mark-satellites, .mark-node-spin, .mark-core{ animation:none !important; opacity:1; }
@@ -265,8 +278,8 @@
   .nav-link:nth-child(2) .nav-icon svg{ animation-delay:-.6s; }
   .nav-link:nth-child(3) .nav-icon svg{ animation-delay:-1.2s; }
   @keyframes navBeam{
-    0%,100%{ filter:drop-shadow(0 0 0 rgba(63,232,212,0)); opacity:.75; }
-    50%{ filter:drop-shadow(0 0 5px rgba(63,232,212,.85)); opacity:1; }
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(var(--accent-rgb),0)); opacity:.75; }
+    50%{ filter:drop-shadow(0 0 5px rgba(var(--accent-rgb),.85)); opacity:1; }
   }
   @media (prefers-reduced-motion: reduce){ .nav-link .nav-icon svg{ animation:none; } }
   .nav-link .nav-icon .tag{
@@ -291,7 +304,7 @@
     font-size:12px !important;
     margin-left:10px;
   }
-  .cta-top:hover{background:rgba(63,232,212,.08);}
+  .cta-top:hover{background:rgba(var(--accent-rgb),.08);}
 
   .nav-links-mobile{ display:none; gap:8px; align-items:center; }
   .nav-link-m{
@@ -302,7 +315,7 @@
     transition:border-color .2s, background .2s, transform .15s;
   }
   .nav-link-m svg{ width:18px; height:18px; opacity:.75; }
-  .nav-link-m.is-active{ border-color:var(--cyan); background:rgba(63,232,212,.08); }
+  .nav-link-m.is-active{ border-color:var(--cyan); background:rgba(var(--accent-rgb),.08); }
   .nav-link-m.is-active svg{ opacity:1; }
   .nav-link-m:active{ transform:scale(.92); }
 
@@ -344,7 +357,7 @@
     line-height:1.05;
     letter-spacing:-.01em;
     max-width:15ch;
-    color:#f2fbfa;
+    color:var(--heading);
   }
   .hero h1 em{
     font-style:normal;
@@ -365,16 +378,16 @@
   }
   .btn-primary{
     padding:14px 26px;
-    background:var(--cyan);
-    color:#04141a;
+    background:var(--aqua);
+    color:var(--on-accent);
     font-weight:600;
     font-size:14px;
     border-radius:3px;
     display:inline-flex; align-items:center; gap:10px;
     transition:transform .18s, box-shadow .18s;
-    box-shadow:0 0 0 rgba(63,232,212,0);
+    box-shadow:0 0 0 rgba(var(--accent-rgb),0);
   }
-  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 24px rgba(63,232,212,.18);}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 24px rgba(var(--accent-rgb),.18);}
   .btn-secondary{
     padding:14px 26px;
     border:1px solid var(--line);
@@ -496,7 +509,7 @@
     font-family:'Space Grotesk', sans-serif;
     font-weight:600;
     font-size:clamp(26px,3vw,38px);
-    color:#f2fbfa;
+    color:var(--heading);
     max-width:20ch;
   }
   .section-head p{
@@ -505,7 +518,7 @@
     font-size:14.5px;
   }
 
-  /* ===== Diagrama de átomo: 6 servicios como electrones orbitando ===== */
+  /* ===== Diagrama de átomo: 7 servicios como electrones orbitando ===== */
   .atom-wrap{
     display:grid;
     grid-template-columns:340px 1fr;
@@ -531,7 +544,7 @@
     margin:-9px 0 0 -9px;
     border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #eafffb, var(--cyan) 40%, var(--teal-deep) 100%);
-    box-shadow:0 0 16px rgba(63,232,212,.55);
+    box-shadow:0 0 16px rgba(var(--accent-rgb),.55);
     z-index:2;
   }
   .atom-nucleus::after{
@@ -539,7 +552,7 @@
     position:absolute;
     inset:-6px;
     border-radius:50%;
-    border:1px solid rgba(63,232,212,.3);
+    border:1px solid rgba(var(--accent-rgb),.3);
     animation:nucleusPulse 2.4s ease-in-out infinite;
   }
   @keyframes nucleusPulse{
@@ -551,7 +564,7 @@
   .atom-guide{
     position:absolute;
     top:50%; left:50%;
-    border:1px dashed rgba(63,232,212,.16);
+    border:1px dashed rgba(var(--accent-rgb),.16);
     border-radius:50%;
     pointer-events:none;
   }
@@ -616,8 +629,8 @@
   }
   /* Brillo respirante que invita a interactuar */
   @keyframes nodeBeacon{
-    0%,100%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 rgba(63,232,212,0); }
-    50%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 12px rgba(63,232,212,.5); }
+    0%,100%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 0 rgba(var(--accent-rgb),0); }
+    50%{ box-shadow:0 4px 14px rgba(0,0,0,.35), 0 0 12px rgba(var(--accent-rgb),.5); }
   }
   .atom-node[data-ring="a"] .node-inner{ animation-name:counterCW, nodeBeacon; animation-duration:42s, 3.2s; }
   .atom-node[data-ring="b"] .node-inner{ animation-name:counterCCW, nodeBeacon; animation-duration:32s, 3.2s; animation-delay:0s, -1.1s; }
@@ -633,8 +646,8 @@
   .node-inner:hover{ border-color:var(--cyan); transform:scale(1.08); }
   .atom-node.active .node-inner{
     border-color:var(--cyan);
-    background:rgba(63,232,212,.12);
-    box-shadow:0 0 18px rgba(63,232,212,.55);
+    background:rgba(var(--accent-rgb),.12);
+    box-shadow:0 0 18px rgba(var(--accent-rgb),.55);
     transform:scale(1.1);
   }
   .atom-node.active .node-inner .node-num{ color:var(--cyan); }
@@ -702,7 +715,7 @@
     font-family:'Space Grotesk', sans-serif;
     font-size:19px;
     font-weight:600;
-    color:#f2fbfa;
+    color:var(--heading);
     margin-bottom:10px;
   }
   .atom-panel p{
@@ -780,7 +793,7 @@
     font-size:19px;
     font-weight:600;
     margin:8px 0 8px;
-    color:#f2fbfa;
+    color:var(--heading);
   }
   .process-step p{
     color:var(--text-mute);
@@ -844,7 +857,7 @@
     font-family:'Space Grotesk', sans-serif;
     font-weight:600;
     font-size:15.5px;
-    color:#f2fbfa;
+    color:var(--heading);
     letter-spacing:.01em;
   }
   .chip-sub{
@@ -877,7 +890,7 @@
   }
   .chip-card:hover .chip-led{
     background:var(--cyan);
-    box-shadow:0 0 8px rgba(63,232,212,.7);
+    box-shadow:0 0 8px rgba(var(--accent-rgb),.7);
     animation:pulse 1.8s ease-in-out infinite;
   }
 
@@ -902,7 +915,7 @@
   }
   .board-card:hover{ background:#0e2224; transform:scale(1.03); box-shadow:0 16px 40px rgba(0,0,0,.4), 0 0 0 1px var(--teal-deep); z-index:2; }
   .board-card .idx{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-faint); letter-spacing:.1em; }
-  .board-card h3{ font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; margin:14px 0 8px; color:#f2fbfa; }
+  .board-card h3{ font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:600; margin:14px 0 8px; color:var(--heading); }
   .board-card p{ font-size:13px; color:var(--text-mute); line-height:1.55; }
   .board-card .tagline{ display:inline-block; margin-top:14px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--teal); border:1px solid var(--teal-deep); padding:4px 9px; border-radius:2px; }
 
@@ -919,7 +932,7 @@
   .boards-empty .rig .block{ fill:var(--panel); stroke:var(--cyan); stroke-width:1.8; animation:boardsBlockBob 2.6s ease-in-out infinite; transform-origin:center; }
   @keyframes boardsBlockBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(10px); } }
   @media (prefers-reduced-motion: reduce){ .boards-empty .rig .cabinet, .boards-empty .rig .block{ animation:none !important; } }
-  .boards-empty h3{ font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:600; color:#f2fbfa; margin-bottom:10px; }
+  .boards-empty h3{ font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:600; color:var(--heading); margin-bottom:10px; }
   .boards-empty p{ color:var(--text-mute); font-size:14px; max-width:48ch; margin:0 auto; }
 
   /* ===== Selector de proyectos por software ===== */
@@ -929,7 +942,7 @@
   .chip-card.is-selected{ border-color:var(--cyan); box-shadow:0 0 0 1px var(--cyan), 0 18px 40px rgba(0,0,0,.4); }
   .chip-card.is-selected::before,
   .chip-card.is-selected::after{ background-image:repeating-linear-gradient(90deg, var(--cyan) 0 5px, transparent 5px 15px); }
-  .chip-card.is-selected .chip-led{ background:var(--cyan); box-shadow:0 0 8px rgba(63,232,212,.7); }
+  .chip-card.is-selected .chip-led{ background:var(--cyan); box-shadow:0 0 8px rgba(var(--accent-rgb),.7); }
   .chip-cta{
     margin-top:14px; display:flex; align-items:center; gap:6px;
     font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--cyan-dim);
@@ -947,7 +960,7 @@
     cursor:pointer; transition:border-color .2s, color .2s, background .2s;
   }
   .proj-filter-btn:hover{ border-color:var(--teal-deep); color:var(--text); }
-  .proj-filter-btn.is-active{ background:var(--cyan); border-color:var(--cyan); color:#03181a; }
+  .proj-filter-btn.is-active{ background:var(--aqua); border-color:var(--aqua); color:var(--on-accent); }
   .proj-filter-btn.is-empty:not(.is-active){ color:var(--text-faint); }
   .proj-count{ font-size:10px; padding:1px 6px; border-radius:2px; background:rgba(255,255,255,.06); }
   .proj-filter-btn.is-active .proj-count{ background:rgba(3,24,26,.18); }
@@ -964,14 +977,14 @@
   .view-open{
     position:absolute; top:10px; right:12px; z-index:2;
     font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.05em; color:var(--text-mute);
-    background:rgba(4,10,11,.7); border:1px solid var(--line); padding:6px 10px; border-radius:3px;
+    background:rgba(var(--bg-rgb),.82); border:1px solid var(--line); padding:6px 10px; border-radius:3px;
     transition:color .2s, border-color .2s;
   }
   .view-open:hover{ color:var(--cyan); border-color:var(--cyan); }
   .view-pane.has-thumbs{ padding-bottom:58px; }
   .view-thumbs{
     position:absolute; left:0; right:0; bottom:0; display:flex; justify-content:center; gap:6px; padding:8px;
-    background:linear-gradient(transparent, rgba(4,10,11,.9));
+    background:linear-gradient(transparent, rgba(var(--bg-rgb),.94));
   }
   .view-thumbs:empty{ display:none; }
   .view-thumbs .view-thumb{
@@ -981,16 +994,109 @@
   .view-thumbs .view-thumb.is-active{ border-color:var(--cyan); opacity:1; }
   .view-thumbs .view-thumb img{ width:100%; height:100%; max-width:none; max-height:none; object-fit:cover; display:block; }
   @media(max-width:640px){
-    .board-modal{ padding:3vh 3vw; }
-    .board-modal-panel{ padding:18px 14px 20px; }
-    .view-stage{ aspect-ratio:4/3; }
     .proj-filter-btn{ padding:8px 11px; }
+  }
+
+  /* ===== Tarjetas de proyecto con vista previa 3D ===== */
+  .boards-grid{ grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:24px; background:none; border:none; }
+  .boards-grid.is-single{ grid-template-columns:1fr; }
+  .board-card{
+    padding:0; display:flex; flex-direction:column; overflow:hidden;
+    border:1px solid var(--line); border-radius:10px; background:var(--panel);
+    transition:border-color .25s, transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+  }
+  .board-card:hover{ background:var(--panel); transform:translateY(-4px); box-shadow:0 18px 44px rgba(0,0,0,.28); border-color:var(--cyan-dim); z-index:auto; }
+  .boards-grid.is-single .board-card{ flex-direction:row; }
+  .board-thumb{
+    position:relative; flex:1 1 58%; aspect-ratio:16/10;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    background:radial-gradient(ellipse 70% 70% at 50% 45%, rgba(var(--accent-rgb),.16), transparent 72%), var(--bg-1);
+    border-bottom:1px solid var(--line);
+  }
+  .boards-grid.is-single .board-thumb{ border-bottom:none; border-right:1px solid var(--line); aspect-ratio:auto; min-height:360px; }
+  .board-thumb img{ width:100%; height:100%; object-fit:contain; padding:8px; filter:drop-shadow(0 16px 22px rgba(0,0,0,.28)); transition:transform .5s cubic-bezier(.2,.8,.2,1); }
+  .board-card:hover .board-thumb img{ transform:scale(1.04); }
+  .board-thumb-empty{ font-size:13px; letter-spacing:.14em; color:var(--text-faint); text-transform:uppercase; }
+  .board-thumb-badges{ position:absolute; top:12px; left:12px; display:flex; gap:6px; }
+  .board-thumb-badges .view-badge{ background:rgba(var(--bg-rgb),.78); backdrop-filter:blur(4px); }
+  .board-expand{
+    position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:7px;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--text-mute);
+    background:rgba(var(--bg-rgb),.78); backdrop-filter:blur(4px); border:1px solid var(--line); padding:6px 10px; border-radius:3px;
+  }
+  .board-expand svg{ width:13px; height:13px; }
+  .board-body{ flex:1 1 42%; padding:30px 30px 30px; display:flex; flex-direction:column; gap:10px; justify-content:center; }
+  .board-body .idx{ margin:0; }
+  .board-body h3{ margin:0; font-size:20px; line-height:1.25; }
+  .board-body p{ margin:0; }
+  .board-cta{
+    margin-top:14px; align-self:flex-start; display:inline-flex; align-items:center; gap:10px;
+    padding:14px 24px; background:var(--aqua); color:var(--on-accent); font-weight:600; font-size:14px; border-radius:4px;
+    transition:transform .18s, box-shadow .18s;
+  }
+  .board-cta svg{ width:16px; height:16px; transition:transform .2s; }
+  .board-card:hover .board-cta{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(var(--accent-rgb),.28); }
+  .board-card:hover .board-cta svg{ transform:translateX(4px); }
+  .boards-empty{ border:1px solid var(--line); border-radius:10px; }
+
+  /* ===== Correcciones de estructura (escritorio y celular) ===== */
+  .cta-section .section-head{ display:block; }
+  .cta-section .section-tag{ justify-content:center; }
+
+  @media(max-width:760px){
+    section{ padding:56px 5vw; }
+    .hero{ padding:52px 5vw 40px; }
+    .section-head{ flex-direction:column; align-items:flex-start; gap:14px; margin-bottom:30px; padding-bottom:20px; }
+    .section-head h2{ max-width:none; }
+    .section-head p{ max-width:none; }
+    .cta-section{ padding:56px 5vw; }
+    .cta-section .section-head{ text-align:left; }
+    .cta-section .section-tag{ justify-content:flex-start; }
+    .cta-section h2{ margin-left:0; }
+    .cta-section > .section-head > p{ margin-left:0; }
+    .quote-flow{ margin-top:36px; }
+    .boards-grid.is-single .board-card{ flex-direction:column; }
+    .boards-grid.is-single .board-thumb{ border-right:none; border-bottom:1px solid var(--line); min-height:0; aspect-ratio:16/10; }
+    .board-body{ padding:20px 18px 22px; }
+    .board-cta{ width:100%; justify-content:center; }
+    .proj-filter{ gap:6px; margin-bottom:18px; }
+  }
+
+  @media(max-width:640px){
+    /* Herramientas: cuadrícula compacta de 2 columnas en vez de 5 tarjetas apiladas */
+    .chip-grid{ grid-template-columns:1fr 1fr; gap:14px 12px; }
+    .chip-card{ padding:16px 12px 14px; }
+    .chip-badge{ width:40px; height:40px; }
+    .chip-badge svg{ width:21px; height:21px; }
+    .chip-card h4{ font-size:14.5px; margin-top:10px; }
+    .chip-sub{ gap:4px; }
+    .chip-sub span:nth-child(n+3){ display:none; }
+    .chip-cta{ margin-top:10px; font-size:10px; }
+    .chip-card:last-child:nth-child(odd){ grid-column:1 / -1; }
+
+    /* Servicios: el átomo (electrones que se solapan y son difíciles de tocar) se reemplaza por una lista desplegable */
+    .atom-wrap{ gap:0; }
+    .atom-diagram, .atom-hint{ display:none; }
+    .atom-detail{ min-height:0; display:flex; flex-direction:column; gap:10px; width:100%; }
+    .atom-panel{ display:block; opacity:1; transform:none; padding:16px 18px; cursor:pointer; border-color:var(--line); }
+    .atom-panel .bg-schema, .atom-panel .service-icon, .atom-close{ display:none; }
+    .atom-panel .idx{ display:inline-block; margin-right:10px; }
+    .atom-panel h3{ display:inline; font-size:16px; margin:0; }
+    .atom-panel::after{
+      content:'+'; position:absolute; right:18px; top:14px;
+      font-family:'IBM Plex Mono', monospace; font-size:18px; color:var(--cyan-dim); line-height:1;
+    }
+    .atom-panel.m-open::after{ content:'\2013'; }
+    .atom-panel p, .atom-panel .platform{ display:none; }
+    .atom-panel.m-open{ border-color:var(--cyan-dim); }
+    .atom-panel.m-open p{ display:block; margin-top:12px; font-size:13.5px; }
+    .atom-panel.m-open .platform{ display:inline-block; margin-top:12px; }
   }
 
   /* Modal del visor */
   .board-modal{
     position:fixed; inset:0; z-index:200;
-    background:rgba(4,10,11,.86); backdrop-filter:blur(6px);
+    background:rgba(var(--scrim-rgb),.86); backdrop-filter:blur(6px);
     display:flex; align-items:center; justify-content:center;
     padding:5vh 5vw;
     opacity:0; pointer-events:none;
@@ -1006,7 +1112,7 @@
   }
   .board-modal.is-open .board-modal-panel{ transform:translateY(0) scale(1); }
   .board-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:18px; }
-  .board-modal-head h3{ font-family:'Space Grotesk', sans-serif; font-size:20px; font-weight:600; color:#f2fbfa; }
+  .board-modal-head h3{ font-family:'Space Grotesk', sans-serif; font-size:20px; font-weight:600; color:var(--heading); }
   .board-modal-head p{ color:var(--text-mute); font-size:13.5px; margin-top:6px; max-width:60ch; }
   .board-modal-close{
     width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:transparent;
@@ -1020,7 +1126,7 @@
     padding:9px 22px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.08em;
     color:var(--text-mute); cursor:pointer; transition:background .2s, color .2s; background:transparent; border:none;
   }
-  .view-tab.is-active{ background:var(--cyan); color:#03181a; }
+  .view-tab.is-active{ background:var(--aqua); color:var(--on-accent); }
   .view-tab:not(.is-active):hover{ background:var(--bg-2); color:var(--text); }
 
   .view-stage{ position:relative; width:100%; aspect-ratio:16/10; background:var(--bg-0); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
@@ -1051,7 +1157,7 @@
     font-size:clamp(26px,3.4vw,38px);
     max-width:26ch;
     margin:0 auto 14px;
-    color:#f2fbfa;
+    color:var(--heading);
   }
   .cta-section > .section-head > p{
     color:var(--text-mute);
@@ -1094,7 +1200,7 @@
   }
   .quote-step.answered::before{
     border-color:var(--cyan);
-    box-shadow:0 0 8px rgba(63,232,212,.6);
+    box-shadow:0 0 8px rgba(var(--accent-rgb),.6);
   }
   .quote-step-label{
     font-family:'IBM Plex Mono', monospace;
@@ -1107,7 +1213,7 @@
     font-size:17px;
     font-weight:600;
     margin:6px 0 16px;
-    color:#f2fbfa;
+    color:var(--heading);
     text-align:left;
   }
   .quote-options{
@@ -1152,7 +1258,7 @@
   .quote-block.selected{
     border-color:var(--cyan);
     color:var(--cyan);
-    background:rgba(63,232,212,.08);
+    background:rgba(var(--accent-rgb),.08);
   }
   .quote-block.selected::before{ background:var(--cyan); }
 
@@ -1213,7 +1319,7 @@
     font-family:'Space Grotesk', sans-serif;
     font-size:19px;
     font-weight:600;
-    color:#f2fbfa;
+    color:var(--heading);
     margin:10px 0 8px;
     text-align:left;
   }
@@ -1325,6 +1431,158 @@
   }
   @media (prefers-reduced-motion: reduce){
     ::view-transition-old(root), ::view-transition-new(root){ animation:none; }
+  }
+  /* Selector 3D / 2D del visor (va al final para ganar a las reglas base del modal) */
+  .view-tabs{ display:flex; gap:10px; border:none; border-radius:0; overflow:visible; margin-bottom:18px; }
+  .view-tab{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:9px;
+    padding:13px 16px; border:1px solid var(--line); border-radius:6px; font-size:12.5px; letter-spacing:.06em;
+  }
+  .view-tab svg{ width:17px; height:17px; }
+  .view-tab.is-active{ background:var(--aqua); border-color:var(--aqua); color:var(--on-accent); }
+
+  .view-tab:not(.is-active):hover{ border-color:var(--teal-deep); color:var(--text); background:var(--bg-2); }
+  @media(max-width:640px){ .view-tab{ padding:12px 8px; font-size:12px; letter-spacing:.03em; gap:7px; } }
+  /* Visor en celular (va al final para ganar a las reglas base del modal) */
+  @media(max-width:640px){
+    .board-modal{ padding:2.5vh 3vw; align-items:flex-start; }
+    .board-modal-panel{ padding:18px 14px 20px; max-height:95vh; }
+    .board-modal-head h3{ font-size:17px; }
+    .board-modal-head p{ font-size:13px; }
+    .view-stage{ aspect-ratio:1 / 1; }
+    .view-hint{ left:0; right:0; bottom:6px; text-align:center; font-size:9.5px; letter-spacing:0; }
+    .view-open{ top:6px; right:6px; padding:5px 8px; }
+  }
+
+  /* ===================================================================
+     TEMA CLARO (por defecto). El tema oscuro sigue disponible con el botón sol/luna.
+     Contrastes WCAG verificados: texto 14:1, secundario 6:1, acento 4,8:1 sobre blanco.
+     =================================================================== */
+  [data-theme="light"]{
+    --bg-0:#EEF5F6; --bg-1:#E1EEF0; --bg-2:#D3E4E7; --panel:#FFFFFF; --line:#B8D0D5;
+    --teal-deep:#0F9AA0; --teal:#167A82; --cyan:#08797C; --cyan-dim:#08797C;
+    --text:#0F2A30; --text-mute:#46606A; --text-faint:#4E666C; --heading:#0A2227; --amber:#9A6A10;
+    --accent-rgb:8,121,124; --bg-rgb:238,245,246; --scrim-rgb:12,34,40; --on-accent:#04201F;
+    --aqua:#3FE8D4; --aqua-rgb:63,232,212; --grid-rgb:15,154,160;
+    --c-diseno:#08797C; --c-mantenim:#5F8A00; --c-montajes:#B45F06;
+    color-scheme:light;
+  }
+  [data-theme="light"] .board-thumb{
+    background:radial-gradient(ellipse 70% 70% at 50% 45%, rgba(63,232,212,.20), transparent 72%), linear-gradient(160deg,#17454D,#0A2429);
+  }
+  [data-theme="light"] .view-pane[data-pane="3d"]{ background:linear-gradient(160deg,#17454D,#0A2429); }
+  [data-theme="light"] .view-hint, [data-theme="light"] .view-loading{ color:#9CC0C3; }
+  [data-theme="light"] .board-thumb-empty{ color:#7FA8AB; }
+  [data-theme="light"] .board-thumb-badges .view-badge,
+  [data-theme="light"] .board-expand{ background:rgba(8,28,32,.72); color:#CFEDEA; border-color:rgba(255,255,255,.2); }
+  [data-theme="light"] .board-card{ box-shadow:0 1px 2px rgba(15,42,48,.05), 0 10px 28px rgba(15,42,48,.06); }
+  [data-theme="light"] .board-card:hover{ box-shadow:0 18px 40px rgba(15,42,48,.14); }
+
+
+  /* ===== Tema claro: más presencia y ritmo entre secciones ===== */
+  .page-frame{ overflow-x:clip; }
+
+  /* Grilla de plano visible: líneas menores cada 64 px y mayores cada 320 px */
+  [data-theme="light"] .grid-bg{
+    opacity:1;
+    background-image:
+      linear-gradient(rgba(var(--grid-rgb),.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--grid-rgb),.14) 1px, transparent 1px),
+      linear-gradient(rgba(var(--grid-rgb),.28) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--grid-rgb),.28) 1px, transparent 1px);
+  }
+  /* Brillos de color de fondo */
+  [data-theme="light"] .noise{
+    background:
+      radial-gradient(ellipse 55% 45% at 88% 4%, rgba(20,194,176,.30), transparent 62%),
+      radial-gradient(ellipse 50% 40% at 4% 20%, rgba(10,122,116,.16), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 105%, rgba(20,194,176,.16), transparent 60%);
+  }
+  [data-theme="light"] .grid-glow{ opacity:.9; }
+  [data-theme="light"] .cursor-glow{ background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%), rgba(20,194,176,.16), transparent 70%); }
+  /* Bocetos y símbolos decorativos */
+  [data-theme="light"] .symbol-field svg{ stroke:var(--teal); opacity:.5; }
+  [data-theme="light"] .symbol-field svg.accent{ stroke:var(--cyan); opacity:.6; }
+  [data-theme="light"] .symbol-field svg text{ fill:var(--teal); }
+  [data-theme="light"] .panel-sketch{ opacity:.95; }
+  /* Título con degradado de color */
+  [data-theme="light"] .hero h1 em{
+    background:linear-gradient(90deg,#08797C 0%,#0E9EA0 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+  }
+
+  /* Franjas de ancho completo (por detrás del contenido) */
+  [data-theme="light"] #proceso::before,
+  [data-theme="light"] #stack::before,
+  [data-theme="light"] footer::before{
+    content:''; position:absolute; top:0; bottom:0; left:50%; width:100vw; transform:translateX(-50%); z-index:-1; pointer-events:none;
+  }
+  [data-theme="light"] #proceso::before{
+    background:linear-gradient(180deg, rgba(var(--accent-rgb),.09), rgba(var(--accent-rgb),.03));
+    border-top:1px solid rgba(var(--accent-rgb),.22); border-bottom:1px solid rgba(var(--accent-rgb),.22);
+  }
+  /* Franja oscura aguamarina: Herramientas y pie (recupera la identidad oscura) */
+  [data-theme="light"] #stack, [data-theme="light"] footer{
+    --bg-0:#050f12; --bg-1:#0a1e22; --bg-2:#0e2a2f; --panel:#0d2529; --line:#1c3d40;
+    --teal-deep:#0e6b73; --teal:#1f9aa3; --cyan:#3fe8d4; --cyan-dim:#2bb5a6;
+    --text:#e6f3f1; --text-mute:#9bb8b6; --text-faint:#7c9b99; --heading:#f2fbfa;
+    --accent-rgb:63,232,212; --on-accent:#03181a;
+  }
+  [data-theme="light"] #stack::before, [data-theme="light"] footer::before{
+    background:
+      linear-gradient(rgba(63,232,212,.07) 1px, transparent 1px) 0 0/64px 64px,
+      linear-gradient(90deg, rgba(63,232,212,.07) 1px, transparent 1px) 0 0/64px 64px,
+      radial-gradient(ellipse 60% 90% at 85% 0%, rgba(63,232,212,.18), transparent 62%),
+      linear-gradient(160deg,#0B2A30,#06161A);
+  }
+  [data-theme="light"] #stack{ color:var(--text); }
+  [data-theme="light"] footer{ position:relative; z-index:1; }
+  /* Selector de tema: píldora con sol / luna (el activo se resalta en aguamarina) */
+  .theme-switch{
+    display:flex; align-items:center; gap:2px; padding:3px; margin-left:10px; flex:0 0 auto;
+    border:1px solid var(--line); border-radius:999px; background:var(--bg-1);
+  }
+  .ts-opt{
+    display:flex; align-items:center; gap:7px; padding:7px 13px 7px 11px; border:0; border-radius:999px;
+    background:transparent; color:var(--text-mute); cursor:pointer;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.06em; transition:background .2s, color .2s;
+  }
+  .ts-opt svg{ width:16px; height:16px; flex:0 0 auto; }
+  .ts-opt:hover{ color:var(--text); }
+  .ts-opt[aria-pressed="true"]{ background:var(--aqua); color:var(--on-accent); }
+  .ts-opt:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  @media(max-width:1180px){ .ts-opt span{ display:none; } .ts-opt{ padding:7px 9px; } }
+  @media(max-width:860px){ .theme-switch{ margin-left:0; } }
+  @media(max-width:480px){
+    .nav-links-mobile{ gap:5px; }
+    .nav-link-m{ width:32px; height:32px; }
+    nav{ gap:5px; }
+    .brand{ gap:9px; }
+    header{ padding-left:4.5vw; padding-right:4.5vw; }
+    .brand-sub{ letter-spacing:.06em; font-size:8.5px; white-space:nowrap; }
+    .ts-opt{ padding:6px 7px; }
+    .ts-opt svg{ width:15px; height:15px; }
+  }
+
+  /* Tema claro: el aguamarina de marca se conserva en botones y estados activos */
+  [data-theme="light"] .btn-primary,
+  [data-theme="light"] .board-cta,
+  [data-theme="light"] .proj-filter-btn.is-active,
+  [data-theme="light"] .view-tab.is-active,
+  [data-theme="light"] .ts-opt[aria-pressed="true"]{
+    box-shadow:0 0 0 1px #0B8F85 inset, 0 8px 20px rgba(var(--aqua-rgb),.35);
+  }
+  [data-theme="light"] .ts-opt[aria-pressed="true"]{ box-shadow:0 0 0 1px #0B8F85 inset; }
+  @media(max-width:380px){
+    header{ padding-left:4vw; padding-right:4vw; }
+    .brand-mark{ width:34px; height:34px; }
+    .brand{ gap:7px; }
+    .nav-links-mobile{ gap:4px; }
+    .nav-link-m{ width:30px; height:30px; }
+    nav{ gap:4px; }
+    .brand-sub{ letter-spacing:.03em; font-size:8px; }
+    .ts-opt{ padding:5px 6px; }
+    .ts-opt svg{ width:14px; height:14px; }
   }
 </style>
 <script type="importmap">
@@ -1566,7 +1824,7 @@
         </span>
         <span class="nav-label">Diseño</span>
       </a>
-      <a href="mantenimiento-proximamente.html" class="nav-link" style="--dest:#B6FF2E;">
+      <a href="mantenimiento-proximamente.html" class="nav-link" style="--dest:var(--c-mantenim);">
         <span class="nav-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
             <path d="M4 16a8 8 0 0 1 16 0"/>
@@ -1577,7 +1835,7 @@
         </span>
         <span class="nav-label">Mantenim.</span>
       </a>
-      <a href="montajes-proximamente.html" class="nav-link" style="--dest:#D97706;">
+      <a href="montajes-proximamente.html" class="nav-link" style="--dest:var(--c-montajes);">
         <span class="nav-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round">
             <path d="M4 20 4 13 11 13 11 7 17 7 17 4.5"/>
@@ -1590,14 +1848,14 @@
 
     <div class="nav-links-mobile">
       <a href="./" class="nav-link-m is-active" aria-label="Diseño">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#3fe8d4" stroke-width="1.4" stroke-linecap="round">
+        <svg viewBox="0 0 24 24" fill="none" style="stroke:var(--c-diseno)" stroke-width="1.4" stroke-linecap="round">
           <rect x="6" y="6" width="12" height="12" rx="1"/>
           <line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/>
           <line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>
         </svg>
       </a>
       <a href="mantenimiento-proximamente.html" class="nav-link-m" aria-label="Mantenimiento">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#B6FF2E" stroke-width="1.4" stroke-linecap="round">
+        <svg viewBox="0 0 24 24" fill="none" style="stroke:var(--c-mantenim)" stroke-width="1.4" stroke-linecap="round">
           <path d="M4 16a8 8 0 0 1 16 0"/>
           <line x1="12" y1="16" x2="16" y2="10"/>
           <circle cx="12" cy="16" r="1.4"/>
@@ -1605,7 +1863,7 @@
         </svg>
       </a>
       <a href="montajes-proximamente.html" class="nav-link-m" aria-label="Montajes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.4" stroke-linecap="round">
+        <svg viewBox="0 0 24 24" fill="none" style="stroke:var(--c-montajes)" stroke-width="1.4" stroke-linecap="round">
           <path d="M4 20 4 13 11 13 11 7 17 7 17 4.5"/>
           <rect x="14" y="1" width="6" height="6" rx="1"/>
         </svg>
@@ -1613,6 +1871,14 @@
     </div>
 
     <a href="#contacto" class="cta-top">Solicitar cotización</a>
+    <div class="theme-switch" role="group" aria-label="Tema de la página">
+      <button type="button" class="ts-opt" data-theme-set="light" aria-pressed="false" title="Tema claro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><span>Claro</span>
+      </button>
+      <button type="button" class="ts-opt" data-theme-set="dark" aria-pressed="false" title="Tema oscuro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A8 8 0 0 1 9.8 4 8 8 0 1 0 20 14.2z"/></svg><span>Oscuro</span>
+      </button>
+    </div>
   </nav>
 </header>
 
@@ -1622,8 +1888,9 @@
     <h1>Modelado 3D y planos eléctricos <em>listos para construir</em>.</h1>
     <p class="hero-sub">
       Convertimos los requerimientos de un proyecto eléctrico en documentación técnica ejecutable:
-      modelo 3D del tablero o instalación, esquemas de control y potencia, y diagramas unifilares
-      con memoria de cálculo. Trabajamos en Eplan, Inventor, Revit Electrical y AutoCAD.
+      modelo 3D del tablero o instalación, esquemas de control y potencia, diagramas unifilares
+      con memoria de cálculo y diseño de iluminación. Trabajamos en Eplan, Inventor, Revit
+      Electrical, AutoCAD y DIALux.
     </p>
     <div class="hero-actions">
       <a href="#contacto" class="btn-primary">
@@ -1654,7 +1921,7 @@
     <div class="section-head reveal">
       <div>
         <div class="section-tag">// Servicios</div>
-        <h2>Seis disciplinas, un mismo estándar de precisión</h2>
+        <h2>Siete disciplinas, un mismo estándar de precisión</h2>
       </div>
       <p>Cada plano o modelo se entrega según normas de dibujo técnico (IEC/NFPA según el proyecto), listo para que taller, obra o un tercero lo revise sin ambigüedades.</p>
     </div>
@@ -1670,8 +1937,11 @@
         <div class="atom-node" data-service="1" data-ring="a" style="--pos:0deg;">
           <div class="node-inner"><span class="node-num mono">01</span></div>
         </div>
-        <div class="atom-node" data-service="4" data-ring="a" style="--pos:180deg;">
+        <div class="atom-node" data-service="4" data-ring="a" style="--pos:120deg;">
           <div class="node-inner"><span class="node-num mono">04</span></div>
+        </div>
+        <div class="atom-node" data-service="7" data-ring="a" style="--pos:240deg;">
+          <div class="node-inner"><span class="node-num mono">07</span></div>
         </div>
 
         <div class="atom-node" data-service="2" data-ring="b" style="--pos:60deg;">
@@ -1857,6 +2127,43 @@
           <p>Actualización de planos existentes a la condición real del sitio después de cambios en obra: se corrigen las diferencias entre lo dibujado y lo instalado, y se entrega en DWG o PDF.</p>
           <span class="platform mono">MULTIPLATAFORMA</span>
         </div>
+
+        <div class="atom-panel" data-panel="7">
+          <button class="atom-close" data-close aria-label="Cerrar">×</button>
+          <svg class="bg-schema" viewBox="0 0 300 220" preserveAspectRatio="xMaxYMax meet">
+            <rect class="dim" x="140" y="16" width="150" height="116" rx="2"/>
+            <ellipse class="dim" cx="165" cy="45" rx="24" ry="19"/>
+            <ellipse class="dim" cx="210" cy="45" rx="24" ry="19"/>
+            <ellipse class="dim" cx="255" cy="45" rx="24" ry="19"/>
+            <ellipse class="dim" cx="165" cy="97" rx="24" ry="19"/>
+            <ellipse class="accent" cx="210" cy="97" rx="24" ry="19"/>
+            <ellipse class="dim" cx="255" cy="97" rx="24" ry="19"/>
+            <rect x="156" y="41" width="18" height="8" rx="1"/>
+            <rect x="201" y="41" width="18" height="8" rx="1"/>
+            <rect x="246" y="41" width="18" height="8" rx="1"/>
+            <rect x="156" y="93" width="18" height="8" rx="1"/>
+            <rect x="201" y="93" width="18" height="8" rx="1"/>
+            <rect x="246" y="93" width="18" height="8" rx="1"/>
+            <text class="lbl" x="196" y="127">E (lx)</text>
+            <line class="accent" x1="150" y1="168" x2="280" y2="168"/>
+            <line class="dim" x1="150" y1="164" x2="150" y2="172"/>
+            <line class="dim" x1="193" y1="164" x2="193" y2="172"/>
+            <line class="dim" x1="237" y1="164" x2="237" y2="172"/>
+            <line class="dim" x1="280" y1="164" x2="280" y2="172"/>
+            <text class="lbl" x="150" y="186">ISOLUX</text>
+            <circle cx="262" cy="196" r="10"/>
+            <line x1="255" y1="189" x2="269" y2="203"/>
+            <line x1="269" y1="189" x2="255" y2="203"/>
+          </svg>
+          <div class="idx mono">07</div>
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 17.5h6M10 20.5h4"/>
+            <path d="M12 3a6 6 0 0 0-3.4 10.9c.5.4.9 1.1.9 1.8V16h5v-.3c0-.7.4-1.4.9-1.8A6 6 0 0 0 12 3z"/>
+          </svg>
+          <h3>Diseño de iluminación</h3>
+          <p>Cálculo luminotécnico en DIALux de interiores y exteriores: selección y distribución de luminarias, niveles de iluminancia (lux) y uniformidad, con verificación frente a RETILAP cuando el proyecto lo requiere, informe de resultados y planos de ubicación.</p>
+          <span class="platform mono">DIALUX</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1883,7 +2190,7 @@
       <div class="process-step reveal">
         <div class="code mono">PASO 02</div>
         <h4>Modelado y esquemáticos preliminares</h4>
-        <p>Desarrollo del diseño en la plataforma correspondiente (Eplan, Inventor, Revit Electrical o AutoCAD) con primer paquete de revisión.</p>
+        <p>Desarrollo del diseño en la plataforma correspondiente (Eplan, Inventor, Revit Electrical, AutoCAD o DIALux) con primer paquete de revisión.</p>
       </div>
 
       <div class="process-step reveal">
@@ -2024,8 +2331,14 @@
       </div>
 
       <div class="view-tabs" id="boardTabs">
-        <button class="view-tab is-active" id="tab2d" data-view="2d">2D</button>
-        <button class="view-tab" id="tab3d" data-view="3d">3D</button>
+        <button class="view-tab is-active" id="tab3d" data-view="3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 12 20 7.5M12 12v9M12 12 4 7.5"/></svg>
+          Modelo 3D
+        </button>
+        <button class="view-tab" id="tab2d" data-view="2d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 9h16M9 9v11"/></svg>
+          Plano 2D
+        </button>
       </div>
 
       <div class="view-stage">
@@ -2063,6 +2376,7 @@
           <button class="quote-block" type="button" data-q="1" data-value="Modelado 3D (Eplan / Inventor / Revit)">Modelado 3D</button>
           <button class="quote-block" type="button" data-q="1" data-value="Esquemático o unifilar en AutoCAD">Esquemático / unifilar</button>
           <button class="quote-block" type="button" data-q="1" data-value="Revisión de planos existentes / as-built">Revisión / as-built</button>
+          <button class="quote-block" type="button" data-q="1" data-value="Cálculo y diseño de iluminación (DIALux)" data-noref="1">Iluminación (DIALux)</button>
           <button class="quote-block" type="button" data-q="1" data-value="Aún no lo tengo claro">No estoy seguro</button>
         </div>
         <div class="quote-answer mono">
@@ -2115,7 +2429,7 @@
 
 <footer>
   <div>NODO 3D — Diseño eléctrico &amp; modelado 3D</div>
-  <div>EPLAN · INVENTOR · REVIT ELECTRICAL · AUTOCAD</div>
+  <div>EPLAN · INVENTOR · REVIT ELECTRICAL · AUTOCAD · DIALUX</div>
 </footer>
 </div><!-- /.page-frame -->
 
@@ -2152,6 +2466,30 @@
   }, {passive:true});
 
   // Fade in al entrar, fade out al salir (ambas direcciones)
+  // Tema claro / oscuro (recuerda la elección del visitante)
+  (function(){
+    const opts = document.querySelectorAll('[data-theme-set]');
+    const apply = (t)=>{
+      document.documentElement.setAttribute('data-theme', t);
+      opts.forEach(b=> b.setAttribute('aria-pressed', String(b.dataset.themeSet === t)));
+      const m = document.querySelector('meta[name="theme-color"]');
+      if(m) m.setAttribute('content', t === 'light' ? '#EEF5F6' : '#050f12');
+    };
+    opts.forEach(b=> b.addEventListener('click', ()=>{
+      const t = b.dataset.themeSet;
+      apply(t);
+      try{ localStorage.setItem('nodo3d-tema', t); }catch(e){}
+    }));
+    apply(document.documentElement.getAttribute('data-theme') || 'light');
+  })();
+
+  // Móvil: los servicios se muestran como lista desplegable en lugar del diagrama de átomo
+  document.querySelectorAll('.atom-panel').forEach(p=>{
+    p.addEventListener('click', ()=>{
+      if(window.matchMedia('(max-width:640px)').matches) p.classList.toggle('m-open');
+    });
+  });
+
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
       e.target.classList.toggle('in', e.isIntersecting);
@@ -2242,7 +2580,8 @@
       answers[q] = {
         value: btn.dataset.value,
         scope: btn.dataset.scope || null,
-        base: btn.dataset.base || null
+        base: btn.dataset.base || null,
+        noref: btn.dataset.noref || null
       };
       stepEl.querySelectorAll('.quote-block').forEach(b=> b.classList.toggle('selected', b===btn));
       stepEl.classList.add('answered');
@@ -2290,7 +2629,7 @@
     }
 
     function renderResult(){
-      const isBasic = answers[2]?.scope === 'basico' && answers[3]?.base === 'con-planos';
+      const isBasic = answers[2]?.scope === 'basico' && answers[3]?.base === 'con-planos' && !answers[1]?.noref;
 
       if(isBasic){
         resultTag.textContent = '// Alcance básico';
@@ -2300,7 +2639,9 @@
       } else {
         resultTag.textContent = '// Alcance a medida';
         resultTitle.textContent = 'Este proyecto requiere revisión personalizada';
-        resultText.textContent = 'Dado el alcance (instalación completa, planta o proyecto desde cero), preferimos evaluarlo directamente antes de establecer un valor, para no ofrecer una referencia que no aplique al proyecto.';
+        resultText.textContent = answers[1]?.noref
+          ? 'El cálculo de iluminación depende del tipo de espacio, el área y los niveles requeridos, por eso preferimos evaluarlo directamente antes de establecer un valor.'
+          : 'Dado el alcance (instalación completa, planta o proyecto desde cero), preferimos evaluarlo directamente antes de establecer un valor, para no ofrecer una referencia que no aplique al proyecto.';
         resultPrice.innerHTML = '';
       }
 
@@ -2455,6 +2796,7 @@
   //     tag: 'TABLERO',                       // etiqueta corta (TABLERO, ILUMINACIÓN, PLANOS...)
   //     desc: 'Descripción corta',
   //     img2d: 'proyectos/tablero-inventor-01/vista.png',   // una imagen, o un arreglo de varias
+  //     thumb: 'proyectos/tablero-inventor-01/vista-previa-3d.webp', // pantallazo del 3D que se muestra en la tarjeta
   //     model3d: 'proyectos/tablero-inventor-01/modelo.glb', // opcional
   //     view3d: { position:[x,y,z], target:[x,y,z] }         // opcional: encuadre inicial de la cámara 3D
   //   }
@@ -2475,13 +2817,14 @@
       software: 'inventor',
       title: 'Tablero de potencia para aire acondicionado',
       tag: 'TABLERO',
-      desc: 'Tablero metálico de 400 × 500 × 250 mm con totalizador de 60 A, barraje de 125 A (3F + N), breaker de 50 A, guardamotor de 1–4 A y barraje de puesta a tierra.',
+      desc: 'Tablero metálico de 400 × 500 × 250 mm con totalizador de 60 A, barraje de 125 A (3F + N), breaker de 50 A, guardamotor de 1 a 4 A y barraje de puesta a tierra.',
       img2d: [
         'proyectos/tablero-potencia-aa-01/plano-completo.png',
         'proyectos/tablero-potencia-aa-01/vista-frontal.png',
         'proyectos/tablero-potencia-aa-01/descripcion-de-partes.png',
         'proyectos/tablero-potencia-aa-01/lista-de-partes.png'
       ],
+      thumb: 'proyectos/tablero-potencia-aa-01/vista-previa-3d.webp',
       model3d: 'proyectos/tablero-potencia-aa-01/modelo.glb',
       // Encuadre pensado para este modelo: la puerta está abierta hacia +Z, por eso la cámara mira desde el lado contrario
       view3d: { position: [2.244, 0.658, -0.958], target: [-0.269, -0.222, 0.424] }
@@ -2561,20 +2904,34 @@
   function renderBoardsGrid(){
     const list = activeSoftware==='all' ? boards : boards.filter(b=>b.software===activeSoftware);
     if(list.length===0){
+      grid.classList.remove('is-single');
       grid.innerHTML = emptyState(activeSoftware==='all' ? null : softwareName(activeSoftware));
       return;
     }
+    grid.classList.toggle('is-single', list.length===1);
+    const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    const expand = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
     grid.innerHTML = list.map(b=>{
       const v2 = images2d(b).length>0, v3 = !!b.model3d;
+      const cta = v2 && v3 ? 'Explorar en 3D y 2D' : (v3 ? 'Explorar en 3D' : 'Ver planos');
+      const thumb = b.thumb
+        ? `<img src="${b.thumb}" alt="Vista previa de ${b.title}">`
+        : `<span class="board-thumb-empty mono">${softwareName(b.software)}</span>`;
       return `
-      <div class="board-card reveal in" data-board-id="${b.id}" role="button" tabindex="0">
-        <div class="idx mono">${softwareName(b.software).toUpperCase()}</div>
-        <h3>${b.title}</h3>
-        <p>${b.desc}</p>
-        <div class="board-meta">
-          <span class="tagline mono">${b.tag}</span>
-          ${v2 ? '<span class="view-badge">2D</span>' : ''}
-          ${v3 ? '<span class="view-badge">3D</span>' : ''}
+      <div class="board-card reveal in" data-board-id="${b.id}" role="button" tabindex="0" aria-label="${cta}: ${b.title}">
+        <div class="board-thumb">
+          ${thumb}
+          <div class="board-thumb-badges">
+            ${v3 ? '<span class="view-badge">3D</span>' : ''}
+            ${v2 ? '<span class="view-badge">2D</span>' : ''}
+          </div>
+          <span class="board-expand">Ampliar ${expand}</span>
+        </div>
+        <div class="board-body">
+          <div class="idx mono">${softwareName(b.software).toUpperCase()} · ${b.tag}</div>
+          <h3>${b.title}</h3>
+          <p>${b.desc}</p>
+          <span class="board-cta">${cta} ${arrow}</span>
         </div>
       </div>`;
     }).join('');
@@ -2630,7 +2987,7 @@
     tab3d.hidden = !has3d;
     tabsWrap.hidden = !(has2d && has3d); // con una sola vista no hace falta el selector
     if(has2d) set2dImage(list, 0);
-    switchView(has2d ? '2d' : '3d');
+    switchView(has3d ? '3d' : '2d'); // la vista previa es 3D, por eso se abre en 3D
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden','false');
     document.body.style.overflow = 'hidden';
@@ -2657,6 +3014,34 @@
   let three = null;
   let loadedModelId = null;
   let loadToken = 0;
+
+  // Ajusta la distancia de la cámara (misma dirección) para que el modelo completo quepa en cuadro con la proporción actual
+  function fitCamera(){
+    if(!three || !three.pts) return;
+    const { THREE, camera, controls, pts } = three;
+    const dir = camera.position.clone().sub(controls.target);
+    if(dir.lengthSq() === 0) return;
+    dir.normalize();
+    const v = new THREE.Vector3(), p = new THREE.Vector3();
+    const fits = (d)=>{
+      camera.position.copy(controls.target).addScaledVector(dir, d);
+      camera.lookAt(controls.target);
+      camera.updateMatrixWorld(true);
+      for(const q of pts){
+        v.copy(q).applyMatrix4(camera.matrixWorldInverse);
+        if(v.z > -0.15) return false; // detrás o demasiado cerca de la cámara
+        p.copy(q).project(camera);
+        if(Math.abs(p.x) > 0.88 || Math.abs(p.y) > 0.88) return false;
+      }
+      return true;
+    };
+    let lo = 0.8, hi = 30;
+    if(!fits(hi)) return;
+    for(let i=0;i<16;i++){ const mid = (lo+hi)/2; if(fits(mid)) hi = mid; else lo = mid; }
+    camera.position.copy(controls.target).addScaledVector(dir, hi);
+    camera.lookAt(controls.target);
+    controls.update();
+  }
 
   function disposeObject(obj){
     obj.traverse((n)=>{
@@ -2695,8 +3080,8 @@
           scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
           pmrem.dispose();
         }catch(e){ console.warn('Sin iluminación de ambiente:', e); }
-        scene.add(new THREE.HemisphereLight(0xdfffe8, 0x0a1210, 0.6));
-        const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+        scene.add(new THREE.HemisphereLight(0xdfffe8, 0x0a1210, 0.4));
+        const dir = new THREE.DirectionalLight(0xffffff, 0.85);
         dir.position.set(3, 5, 2);
         scene.add(dir);
 
@@ -2705,6 +3090,7 @@
         controls.dampingFactor = 0.08;
         controls.minDistance = 0.5;
         controls.maxDistance = 20;
+        controls.addEventListener('start', ()=>{ if(three) three.userMoved = true; });
 
         const resize = ()=>{
           const w = mount.clientWidth, h = mount.clientHeight;
@@ -2712,6 +3098,7 @@
           renderer.setSize(w, h);
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
+          if(three && three.pts && !three.userMoved) fitCamera();
         };
         new ResizeObserver(resize).observe(mount);
         resize();
@@ -2724,7 +3111,7 @@
         };
         tick();
 
-        three = { THREE, renderer, scene, camera, controls, currentMesh:null };
+        three = { THREE, renderer, scene, camera, controls, currentMesh:null, pts:null, userMoved:false };
       }
 
       if(loadedModelId === board.id){ loading.style.display = 'none'; return; }
@@ -2757,6 +3144,22 @@
           three.camera.position.set(...(v.position || [2.4, 1.8, 2.4]));
           three.controls.target.set(...(v.target || [0, 0, 0]));
           three.controls.update();
+          // puntos de muestra del modelo para encuadrarlo en cualquier proporción de pantalla
+          obj.updateMatrixWorld(true);
+          const pts = [], tv = new three.THREE.Vector3();
+          obj.traverse((n)=>{
+            if(!n.isMesh) return;
+            const pos = n.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count/60));
+            for(let i=0;i<pos.count;i+=step){ pts.push(tv.fromBufferAttribute(pos,i).applyMatrix4(n.matrixWorld).clone()); }
+            n.geometry.computeBoundingBox();
+            const bb = n.geometry.boundingBox;
+            for(const x of [bb.min.x,bb.max.x]) for(const y of [bb.min.y,bb.max.y]) for(const z of [bb.min.z,bb.max.z]){
+              pts.push(new three.THREE.Vector3(x,y,z).applyMatrix4(n.matrixWorld));
+            }
+          });
+          three.pts = pts;
+          three.userMoved = false;
+          fitCamera();
           loadedModelId = board.id;
           loading.style.display = 'none';
         },
