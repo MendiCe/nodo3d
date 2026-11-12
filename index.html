@@ -5,10 +5,10 @@
 <script>(function(){var t="light";try{var g=localStorage.getItem("nodo3d-tema");if(g==="dark"||g==="light")t=g;}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 <meta name="theme-color" content="#EEF5F6">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NODO 3D — Diseño Eléctrico &amp; Modelado 3D · Eplan · Inventor · Revit Electrical · AutoCAD · DIALux</title>
-<meta name="description" content="Diseño eléctrico y modelado 3D en Eplan, Inventor y Revit Electrical, además de esquemáticos y diagramas unifilares en AutoCAD y cálculo de iluminación en DIALux. Cotiza tu proyecto en minutos.">
-<meta property="og:title" content="NODO 3D — Diseño Eléctrico &amp; Modelado 3D">
-<meta property="og:description" content="Modelado 3D y planos eléctricos listos para construir: Eplan, Inventor, Revit Electrical, AutoCAD y DIALux.">
+<title>NODO 3D — Ingeniería y diseño eléctrico · Eplan · Inventor · Revit Electrical · AutoCAD · DIALux</title>
+<meta name="description" content="Ingeniería y diseño eléctrico: modelado 3D en Eplan, Inventor y Revit Electrical, esquemáticos y diagramas unifilares en AutoCAD y cálculo de iluminación en DIALux. Cotiza tu proyecto en minutos.">
+<meta property="og:title" content="NODO 3D — Ingeniería y diseño eléctrico">
+<meta property="og:description" content="Ingeniería y diseño eléctrico: modelado 3D y planos listos para construir, en Eplan, Inventor, Revit Electrical, AutoCAD y DIALux.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CO">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='5' fill='%23071a1e'/%3E%3Cpolygon points='12,6 6.8,9 6.8,15 12,18 17.2,15 17.2,9' fill='none' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='12' y2='6' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='6.8' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Cline x1='12' y1='12' x2='17.2' y2='15' stroke='%233fe8d4' stroke-width='1'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%233fe8d4'/%3E%3Ccircle cx='6.8' cy='9' r='1.15' fill='%23071a1e' stroke='%23B6FF2E' stroke-width='1.1'/%3E%3Ccircle cx='17.2' cy='9' r='1.15' fill='%23071a1e' stroke='%23D97706' stroke-width='1.1'/%3E%3Ccircle cx='12' cy='18' r='1.15' fill='%23071a1e' stroke='%233fe8d4' stroke-width='1.1'/%3E%3C/svg%3E">
@@ -165,6 +165,14 @@
     background:rgba(var(--bg-rgb),.82);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  /* El header no lleva grilla: un velo difuminado arriba, para que su fondo
+     haga el mismo desvanecido que el borde superior de la página. */
+  header::after{
+    content:''; position:absolute; inset:0 0 auto 0; height:100%;
+    pointer-events:none; z-index:-1;
+    background:linear-gradient(180deg, rgba(var(--bg-rgb),.55), rgba(var(--bg-rgb),0));
   }
   .brand{display:flex; align-items:center; gap:12px;}
   .brand-mark{
@@ -1494,9 +1502,8 @@
   /* Brillos de color de fondo */
   [data-theme="light"] .noise{
     background:
-      radial-gradient(ellipse 55% 45% at 88% 4%, rgba(20,194,176,.30), transparent 62%),
-      radial-gradient(ellipse 50% 40% at 4% 20%, rgba(10,122,116,.16), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 50% 105%, rgba(20,194,176,.16), transparent 60%);
+      radial-gradient(ellipse 55% 40% at 88% 2%, rgba(20,194,176,.16), transparent 64%),
+      radial-gradient(ellipse 50% 40% at 4% 18%, rgba(10,122,116,.09), transparent 62%);
   }
   [data-theme="light"] .grid-glow{ opacity:.9; }
   [data-theme="light"] .cursor-glow{ background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%), rgba(20,194,176,.16), transparent 70%); }
@@ -1505,6 +1512,48 @@
   [data-theme="light"] .symbol-field svg.accent{ stroke:var(--cyan); opacity:.6; }
   [data-theme="light"] .symbol-field svg text{ fill:var(--teal); }
   [data-theme="light"] .panel-sketch{ opacity:.95; }
+  /* Marco del plano: el mismo en toda la página, alineado a la grilla de 64 px.
+     La grilla es fija, así que cada franja (o el contenido) se recorta a la línea
+     del marco y ninguna banda queda desfasada ni con un tono fuera de sitio. */
+  :root{ --frame-x:max(6vw, calc((100vw - 1280px) / 2)); }
+  .page-frame{
+    border-left:1px solid rgba(var(--grid-rgb,15,154,160),.30);
+    border-right:1px solid rgba(var(--grid-rgb,15,154,160),.30);
+  }
+  [data-theme="dark"] .page-frame{
+    border-left-color:rgba(63,232,212,.16);
+    border-right-color:rgba(63,232,212,.16);
+  }
+  /* El resplandor ambiental empieza debajo del header y no se repite por toda la página */
+  .noise{
+    top:79px;
+    background:radial-gradient(ellipse 55% 45% at 88% 0%, rgba(20,194,176,.22), transparent 60%),
+               radial-gradient(ellipse 45% 40% at 4% 6%, rgba(10,122,116,.10), transparent 60%);
+  }
+  [data-theme="light"] .noise{
+    background:radial-gradient(ellipse 55% 45% at 88% 0%, rgba(20,194,176,.22), transparent 60%),
+               radial-gradient(ellipse 45% 40% at 4% 6%, rgba(10,122,116,.10), transparent 60%);
+  }
+  /* Franjas oscuras y de color: cuadran con el marco y con la grilla */
+  [data-theme="light"] #stack::before,
+  [data-theme="light"] footer::before,
+  [data-theme="light"] #proceso::before{
+    left:var(--frame-x); right:var(--frame-x); width:auto; transform:none;
+  }
+  [data-theme="light"] #stack::before,
+  [data-theme="light"] footer::before{
+    background-position:calc(-1 * var(--frame-x)) top,
+                        calc(-1 * var(--frame-x)) top,
+                        center top,
+                        center top;
+  }
+
+
+  /* Área de trabajo de las franjas oscuras: lleva su propio fondo (para que
+     el texto con mix-blend no se vea fantasma en las zonas claras) y su marco,
+     alineado con la grilla de 64 px igual que el resto de la página. */
+  [data-theme="light"] #stack, [data-theme="light"] footer{ position:relative; isolation:isolate; }
+
   /* Título con degradado de color */
   [data-theme="light"] .hero h1 em{
     background:linear-gradient(90deg,#08797C 0%,#0E9EA0 100%);
@@ -1521,19 +1570,15 @@
     background:linear-gradient(180deg, rgba(var(--accent-rgb),.09), rgba(var(--accent-rgb),.03));
     border-top:1px solid rgba(var(--accent-rgb),.22); border-bottom:1px solid rgba(var(--accent-rgb),.22);
   }
-  /* Franja oscura aguamarina: Herramientas y pie (recupera la identidad oscura) */
-  [data-theme="light"] #stack, [data-theme="light"] footer{
-    --bg-0:#050f12; --bg-1:#0a1e22; --bg-2:#0e2a2f; --panel:#0d2529; --line:#1c3d40;
-    --teal-deep:#0e6b73; --teal:#1f9aa3; --cyan:#3fe8d4; --cyan-dim:#2bb5a6;
-    --text:#e6f3f1; --text-mute:#9bb8b6; --text-faint:#7c9b99; --heading:#f2fbfa;
-    --accent-rgb:63,232,212; --on-accent:#03181a;
-  }
+  /* Herramientas y pie usan la paleta del tema elegido: en claro se ven claros
+     (fondo, tarjetas y textos), en oscuro siguen oscuros. */
+  /* La franja NO pinta su propia grilla: deja ver la grilla general de la página,
+     para que las líneas sigan alineadas y se muevan con el scroll. Solo añade
+     un velo suave y el brillo de esquina. */
   [data-theme="light"] #stack::before, [data-theme="light"] footer::before{
     background:
-      linear-gradient(rgba(63,232,212,.07) 1px, transparent 1px) 0 0/64px 64px,
-      linear-gradient(90deg, rgba(63,232,212,.07) 1px, transparent 1px) 0 0/64px 64px,
-      radial-gradient(ellipse 60% 90% at 85% 0%, rgba(63,232,212,.18), transparent 62%),
-      linear-gradient(160deg,#0B2A30,#06161A);
+      radial-gradient(ellipse 60% 90% at 85% 0%, rgba(var(--accent-rgb),.07), transparent 62%),
+      linear-gradient(160deg, rgba(231,241,242,.55), rgba(238,245,246,.20));
   }
   [data-theme="light"] #stack{ color:var(--text); }
   [data-theme="light"] footer{ position:relative; z-index:1; }
@@ -1543,23 +1588,32 @@
     border:1px solid var(--line); border-radius:999px; background:var(--bg-1);
   }
   .ts-opt{
-    display:flex; align-items:center; gap:7px; padding:7px 13px 7px 11px; border:0; border-radius:999px;
+    display:flex; align-items:center; justify-content:center;
+    width:32px; height:32px; padding:0; border:0; border-radius:999px;
     background:transparent; color:var(--text-mute); cursor:pointer;
-    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.06em; transition:background .2s, color .2s;
+    transition:background .2s, color .2s;
   }
   .ts-opt svg{ width:16px; height:16px; flex:0 0 auto; }
+  .ts-opt .sr-only{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+  }
   .ts-opt:hover{ color:var(--text); }
   .ts-opt[aria-pressed="true"]{ background:var(--aqua); color:var(--on-accent); }
   .ts-opt:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
   @media(max-width:1180px){ .ts-opt span{ display:none; } .ts-opt{ padding:7px 9px; } }
   @media(max-width:860px){ .theme-switch{ margin-left:0; } }
+  @media(max-width:520px){
+    .brand-sub{ display:none; }
+    .brand{ gap:8px; }
+  }
   @media(max-width:480px){
     .nav-links-mobile{ gap:5px; }
     .nav-link-m{ width:32px; height:32px; }
     nav{ gap:5px; }
     .brand{ gap:9px; }
     header{ padding-left:4.5vw; padding-right:4.5vw; }
-    .brand-sub{ letter-spacing:.06em; font-size:8.5px; white-space:nowrap; }
+    .brand-sub{ letter-spacing:.05em; font-size:8px; white-space:nowrap; }
     .ts-opt{ padding:6px 7px; }
     .ts-opt svg{ width:15px; height:15px; }
   }
@@ -1580,7 +1634,7 @@
     .nav-links-mobile{ gap:4px; }
     .nav-link-m{ width:30px; height:30px; }
     nav{ gap:4px; }
-    .brand-sub{ letter-spacing:.03em; font-size:8px; }
+    .brand-sub{ letter-spacing:.02em; font-size:7.5px; }
     .ts-opt{ padding:5px 6px; }
     .ts-opt svg{ width:14px; height:14px; }
   }
@@ -1809,7 +1863,7 @@
     </div>
     <div class="brand-text">
       <div class="brand-name">NODO<span>·</span>3D</div>
-      <div class="brand-sub">INGENIERÍA ELÉCTRICA</div>
+      <div class="brand-sub">INGENIERÍA Y DISEÑO ELÉCTRICO · MODELADO 3D</div>
     </div>
   </div>
   <nav>
@@ -1873,10 +1927,10 @@
     <a href="#contacto" class="cta-top">Solicitar cotización</a>
     <div class="theme-switch" role="group" aria-label="Tema de la página">
       <button type="button" class="ts-opt" data-theme-set="light" aria-pressed="false" title="Tema claro">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><span>Claro</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><span class="sr-only">Tema claro</span>
       </button>
       <button type="button" class="ts-opt" data-theme-set="dark" aria-pressed="false" title="Tema oscuro">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A8 8 0 0 1 9.8 4 8 8 0 1 0 20 14.2z"/></svg><span>Oscuro</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A8 8 0 0 1 9.8 4 8 8 0 1 0 20 14.2z"/></svg><span class="sr-only">Tema oscuro</span>
       </button>
     </div>
   </nav>
@@ -1884,7 +1938,7 @@
 
 <main>
   <section class="hero">
-    <div class="eyebrow">Ingeniería eléctrica &amp; modelado 3D</div>
+    <div class="eyebrow">Ingeniería y diseño eléctrico · modelado 3D</div>
     <h1>Modelado 3D y planos eléctricos <em>listos para construir</em>.</h1>
     <p class="hero-sub">
       Convertimos los requerimientos de un proyecto eléctrico en documentación técnica ejecutable:
@@ -2428,7 +2482,7 @@
 </main>
 
 <footer>
-  <div>NODO 3D — Diseño eléctrico &amp; modelado 3D</div>
+  <div>NODO 3D — Ingeniería y diseño eléctrico &amp; modelado 3D</div>
   <div>EPLAN · INVENTOR · REVIT ELECTRICAL · AUTOCAD · DIALUX</div>
 </footer>
 </div><!-- /.page-frame -->
