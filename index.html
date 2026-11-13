@@ -534,7 +534,20 @@
     align-items:start;
   }
   @media(max-width:900px){
-    .atom-wrap{ grid-template-columns:1fr; gap:36px; justify-items:center; }
+    .atom-wrap{ grid-template-columns:1fr; gap:30px; justify-items:center; }
+  }
+  @media(max-width:560px){
+    /* en pantallas angostas los electrones del anillo exterior se salen del contenedor */
+    #servicios{ overflow-x:clip; }
+    .atom-wrap{ width:100%; }
+  }
+  /* Móvil: el mismo átomo, centrado y con un panel de detalle debajo (sin lista desplegable) */
+  @media(max-width:900px){
+    .atom-detail{ width:100%; max-width:520px; min-height:0; }
+    .atom-hint{ justify-content:center; text-align:center; }
+    /* el plano de fondo del panel se reduce para no cruzarse con el texto */
+    .atom-panel{ padding:24px 22px; }
+    .atom-panel .bg-schema{ display:none; }
   }
 
   .atom-diagram{
@@ -543,7 +556,8 @@
     height:320px;
     flex-shrink:0;
   }
-  @media(max-width:420px){ .atom-diagram{ width:260px; height:260px; } }
+  @media(max-width:560px){ .atom-diagram{ width:288px; height:288px; } }
+  @media(max-width:400px){ .atom-diagram{ width:250px; height:250px; } }
 
   .atom-nucleus{
     position:absolute;
@@ -579,10 +593,15 @@
   .guide-a{ width:300px; height:300px; margin:-150px 0 0 -150px; }
   .guide-b{ width:220px; height:220px; margin:-110px 0 0 -110px; }
   .guide-c{ width:140px; height:140px; margin:-70px 0 0 -70px; }
-  @media(max-width:420px){
-    .guide-a{ width:244px; height:244px; margin:-122px 0 0 -122px; }
-    .guide-b{ width:178px; height:178px; margin:-89px 0 0 -89px; }
-    .guide-c{ width:112px; height:112px; margin:-56px 0 0 -56px; }
+  @media(max-width:560px){
+    .guide-a{ width:270px; height:270px; margin:-135px 0 0 -135px; }
+    .guide-b{ width:198px; height:198px; margin:-99px 0 0 -99px; }
+    .guide-c{ width:126px; height:126px; margin:-63px 0 0 -63px; }
+  }
+  @media(max-width:400px){
+    .guide-a{ width:234px; height:234px; margin:-117px 0 0 -117px; }
+    .guide-b{ width:172px; height:172px; margin:-86px 0 0 -86px; }
+    .guide-c{ width:110px; height:110px; margin:-55px 0 0 -55px; }
   }
 
   /* Cada electrón gira de forma independiente: pausar uno no afecta a los demás */
@@ -596,10 +615,17 @@
   .atom-node[data-ring="a"]{ --radius:150px; animation-name:orbitCW; animation-duration:42s; }
   .atom-node[data-ring="b"]{ --radius:110px; animation-name:orbitCCW; animation-duration:32s; }
   .atom-node[data-ring="c"]{ --radius:70px; animation-name:orbitCW; animation-duration:24s; }
-  @media(max-width:420px){
-    .atom-node[data-ring="a"]{ --radius:122px; }
-    .atom-node[data-ring="b"]{ --radius:89px; }
-    .atom-node[data-ring="c"]{ --radius:56px; }
+  @media(max-width:560px){
+    .atom-node[data-ring="a"]{ --radius:135px; }
+    .atom-node[data-ring="b"]{ --radius:99px; }
+    .atom-node[data-ring="c"]{ --radius:63px; }
+    .node-inner{ width:42px; height:42px; margin:-21px 0 0 -21px; }
+    .node-inner .node-num{ font-size:11px; }
+  }
+  @media(max-width:400px){
+    .atom-node[data-ring="a"]{ --radius:117px; }
+    .atom-node[data-ring="b"]{ --radius:86px; }
+    .atom-node[data-ring="c"]{ --radius:55px; }
   }
   @keyframes orbitCW{
     from{ transform:rotate(var(--pos)) translateX(var(--radius)); }
@@ -1081,24 +1107,6 @@
     .chip-sub span:nth-child(n+3){ display:none; }
     .chip-cta{ margin-top:10px; font-size:10px; }
     .chip-card:last-child:nth-child(odd){ grid-column:1 / -1; }
-
-    /* Servicios: el átomo (electrones que se solapan y son difíciles de tocar) se reemplaza por una lista desplegable */
-    .atom-wrap{ gap:0; }
-    .atom-diagram, .atom-hint{ display:none; }
-    .atom-detail{ min-height:0; display:flex; flex-direction:column; gap:10px; width:100%; }
-    .atom-panel{ display:block; opacity:1; transform:none; padding:16px 18px; cursor:pointer; border-color:var(--line); }
-    .atom-panel .bg-schema, .atom-panel .service-icon, .atom-close{ display:none; }
-    .atom-panel .idx{ display:inline-block; margin-right:10px; }
-    .atom-panel h3{ display:inline; font-size:16px; margin:0; }
-    .atom-panel::after{
-      content:'+'; position:absolute; right:18px; top:14px;
-      font-family:'IBM Plex Mono', monospace; font-size:18px; color:var(--cyan-dim); line-height:1;
-    }
-    .atom-panel.m-open::after{ content:'\2013'; }
-    .atom-panel p, .atom-panel .platform{ display:none; }
-    .atom-panel.m-open{ border-color:var(--cyan-dim); }
-    .atom-panel.m-open p{ display:block; margin-top:12px; font-size:13.5px; }
-    .atom-panel.m-open .platform{ display:inline-block; margin-top:12px; }
   }
 
   /* Modal del visor */
@@ -1606,6 +1614,15 @@
   @media(max-width:520px){
     .brand-sub{ display:none; }
     .brand{ gap:8px; }
+  }
+  /* Móvil: el átomo se mantiene completo (no se encoge ni se convierte en lista),
+     con la misma animación del escritorio */
+  @media(max-width:860px){
+    .brand-mark{ width:38px !important; height:38px !important; border-radius:8px; }
+    .brand-mark svg{ width:22px !important; height:22px !important; }
+    .mark-satellites{ animation:satOrbit 3.6s linear infinite; }
+    .mark-node-spin{ animation:nodeSpin 1.8s linear infinite; }
+    .mark-cube, .mark-spoke{ opacity:1; }
   }
   @media(max-width:480px){
     .nav-links-mobile{ gap:5px; }
@@ -2536,13 +2553,6 @@
     }));
     apply(document.documentElement.getAttribute('data-theme') || 'light');
   })();
-
-  // Móvil: los servicios se muestran como lista desplegable en lugar del diagrama de átomo
-  document.querySelectorAll('.atom-panel').forEach(p=>{
-    p.addEventListener('click', ()=>{
-      if(window.matchMedia('(max-width:640px)').matches) p.classList.toggle('m-open');
-    });
-  });
 
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
